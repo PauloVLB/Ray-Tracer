@@ -16,10 +16,10 @@
         <light_source type="spot" I="1.0 0.65 0"  scale="1 1 1" from="15 12 -2" to="3 3 7" cutoff="15" falloff="5" />
 
         <!-- Material Library -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/materials.xml" />
+        <include filename="scene/lights_scene/materials.xml" />
 
         <!-- Objects -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/spheres.xml" />
-
+        <include filename="scene/lights_scene/spheres.xml" />
+        
     <world_end/>
 </RT3>

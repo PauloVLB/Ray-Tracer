@@ -11,7 +11,7 @@
 #include "../shapes/sphere.h"
 #include "../lights/ambient.h"
 #include "../lights/point.h"
-
+#include "../lights/spot.h"
 
 namespace rt3 {
 
@@ -135,9 +135,9 @@ Light * API::make_light( const ParamSet &ps_light /*, Bounds3f worldBox */)
         light = create_ambient_light(ps_light);
     }else if(type == "point"){
         light = create_point_light(ps_light);
-    }/* else if(type == "spot"){
+    } else if(type == "spot"){
         light = create_spotlight_light(ps_light);
-    }else if(type == "directional"){
+    }/*else if(type == "directional"){
         light = create_directional_light(ps_light, worldBox);
     }*/else{
         RT3_ERROR("Light type unknown.");

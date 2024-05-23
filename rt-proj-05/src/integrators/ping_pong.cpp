@@ -7,7 +7,7 @@
 namespace rt3{
 
 Vector3f calc_h(const Vector3f &viewDir, const Vector3f &lightDir){
-    return glm::normalize(viewDir + lightDir);
+    return -glm::normalize(viewDir + lightDir);
 }
 
 std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Scene>& scene) const{
@@ -40,9 +40,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
 
                 auto [lightColor, lightDir, visTester] = lightLi->sample_Li(isect);
 
-
-                if(visTester->unoccluded(scene)){ // 
-                    // difuse
+                if(visTester->unoccluded(scene)){ 
                     {
                         real_type coef = std::max(real_type(0), glm::dot(isect->n, -lightDir));
                         Color diffuseContrib = material->diffuse * lightColor * coef;
@@ -50,7 +48,6 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
                         color = color + diffuseContrib;
                     }
                     
-                    // specular
                     if(material->glossiness){
                         auto h = calc_h(ray.d, lightDir);
 
@@ -64,10 +61,11 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
             }
         }
 
-        if(currRecurStep < maxRecursionSteps){
-            Vector3f newDir = glm::normalize(ray.d + (isect->n * (-2 * glm::dot(ray.d,isect->n))));
+        Vector3f new_dir = glm::normalize((ray.d) - 2 * (glm::dot(ray.d, isect->n))*isect->n);
+        Ray refl_ray = Ray(isect->p + new_dir * ERR, new_dir, 0.1);
 
-            auto temp_L = Li(Ray(isect->p + newDir * ERR, newDir), scene, currRecurStep + 1);
+        if(currRecurStep < maxRecursionSteps){
+            auto temp_L = Li(refl_ray, scene, currRecurStep + 1);
 
             if(temp_L.has_value()) {
                 color = color + material->mirror * temp_L.value();
