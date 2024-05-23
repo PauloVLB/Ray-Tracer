@@ -20,7 +20,7 @@ public:
 };
 
 
-PingPongMaterial * create_blinn_phong_material( const ParamSet &ps );
+PingPongMaterial * create_ping_pong_material( const ParamSet &ps );
 
 }
 

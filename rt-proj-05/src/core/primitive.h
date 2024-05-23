@@ -13,7 +13,7 @@ class Primitive {
 public:
 	virtual ~Primitive(){};
 	virtual bool intersect( const Ray& r, std::shared_ptr<Surfel> &isect ) const = 0;
-	virtual bool intersect_p( const Ray& r) const = 0;
+	virtual bool intersect_p( const Ray& r, real_type maxT ) const = 0;
 };
 
 class AggregatePrimitive : public Primitive{
@@ -33,7 +33,7 @@ public:
 
 	~PrimList(){};
 
-	bool intersect_p( const Ray& r ) const override;
+	bool intersect_p( const Ray& r, real_type maxT ) const override;
 
 	bool intersect( const Ray& r, std::shared_ptr<Surfel> &isect ) const override;
 
@@ -49,7 +49,7 @@ public:
 
 	~GeometricPrimitive(){};
 
-	bool intersect_p( const Ray& r ) const override;
+	bool intersect_p( const Ray& r, real_type maxT  ) const override;
 
 	bool intersect( const Ray& r, std::shared_ptr<Surfel> &isect ) const override;
 

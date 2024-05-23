@@ -12,7 +12,7 @@ public:
 
     virtual ~Shape(){}
 
-    virtual bool intersect_p(const Ray &r) const = 0;
+    virtual bool intersect_p(const Ray &r, real_type maxT ) const = 0;
     virtual bool intersect(const Ray &r, shared_ptr<Surfel> &isect) const = 0;
 };
 

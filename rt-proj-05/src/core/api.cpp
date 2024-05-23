@@ -5,89 +5,16 @@
 #include <memory>
 #include "color.h"
 #include "../materials/flat.h"
+#include "../integrators/ping_pong.h"
 #include "../integrators/flat.h"
 #include "../integrators/normal_map.h"
 #include "../shapes/sphere.h"
+#include "../lights/ambient.h"
+#include "../lights/point.h"
+
 
 namespace rt3 {
 
-// ***** TEST OF THE PREVIOUS PROJECT ******
-/*
-struct Sphere {
-  Point3f center;
-  Sphere(real_type x, real_type y, real_type z) {
-    center.x = x;
-    center.y = y;
-    center.z = z;
-  } 
-
-  Sphere() {}
-
-  real_type r = 0.4;
-};
-
-real_type delta(const Sphere &s, const Ray &r) {
-  Vector3f oc = r.o - s.center;
-
-  return (glm::dot(oc, r.d)*glm::dot(oc, r.d)) - (glm::dot(r.d,r.d) * glm::dot(oc, oc) - s.r*s.r);
-}
-
-bool intersect(const Sphere &s, const Ray &r) {
-  return delta(s, r) >= 0;
-}
-
-// *****************************************
-
-void render(Camera *camera, Background *bckg, RunningOptions &opt, vector<real_type> cw) {
-  int w = camera->film->width();
-  int h = camera->film->height();
-
-  auto crop_window = opt.crop_window;
-
-  if (cw[0] == 0 && cw[1] == 1 && cw[2] == 0 && cw[3] == 1) {
-    if (crop_window[0][0] == 0 && crop_window[0][1] == 1 && crop_window[1][0] == 0 && crop_window[1][1] == 1) {
-        std::cout << "--> Using default crop window." << std::endl;
-        w = camera->film->width();
-        h = camera->film->height();
-    } else {
-        std::cout << "--> Using crop window from flag." << std::endl;
-        w = crop_window[1][1] - crop_window[1][0] + 1;
-        h = crop_window[0][1] - crop_window[0][0] + 1;
-    }
-  } else {
-      std::cout << "--> Using custom crop window." << std::endl;
-      w = cw[1] - cw[0] + 1;
-      h = cw[3] - cw[2] + 1;
-  }
-
-
-  vector<Sphere> ss;
-  ss.push_back({-1, 0.5, 5}); 
-  ss.push_back({1, -0.5, 8});
-  ss.push_back({-1, -1.5, 3.5});
-
-  for(int i = 0; i < h; i++) {
-    for(int j = 0; j < w; j++) {
-      Ray r = camera->generate_ray(i, j);
-
-
-      //std::cout << "Ray r = " << r << std::endl;
-      Color c = bckg->sampleXYZ({float(j)/float(w), float(i)/float(h)});
-      for(Sphere s : ss) {
-        if(intersect(s, r)) {
-          c = {1, 0, 0};
-          //std::cout << "inter(" << i << " " << j << ")";
-        }
-      }
-       
-      camera->film->add_sample({i,j}, c);
-
-    }
-  }
-  camera->film->write_image();
-}
-
-*/
 
 //=== API's static members declaration and initialization.
 API::APIState API::curr_state = APIState::Uninitialized;
@@ -96,6 +23,7 @@ std::unique_ptr<RenderOptions> API::render_opt;
 vector<std::pair<ParamSet, shared_ptr<Material>>> API::global_primitives;
 shared_ptr<Material> API::curr_material;
 std::map<string, shared_ptr<Material>> API::named_materials;
+vector<ParamSet> API::lights;
 // GraphicsState API::curr_GS;
 
 // THESE FUNCTIONS ARE NEEDED ONLY IN THIS SOURCE FILE (NO HEADER NECESSARY)
@@ -144,6 +72,8 @@ Material * API::make_material(const ParamSet &ps_material)
     Material *material = nullptr;
     if(type == "flat"){
         material = create_flat_material(ps_material);
+    } else if(type == "blinn") {
+      material = create_ping_pong_material(ps_material);
     } else {
         RT3_ERROR("Uknown material type.");
     }
@@ -157,11 +87,11 @@ Integrator * API::make_integrator(const ParamSet &ps_integrator, unique_ptr<Came
   std::string type = retrieve(ps_integrator, "type", std::string{ "flat" });
   Integrator *integrator = nullptr;
   if(type == "flat") {
-    std::cout << "fazendo flat integrator" << std::endl;
     integrator = create_flat_integrator(std::move(camera));
   } else if(type == "normal_map") {
-    std::cout << "fazendo normal integrator" << std::endl;
     integrator = create_normal_integrator(std::move(camera));
+  } else if(type == "blinn_phong") {
+    integrator = create_ping_pong_integrator(ps_integrator, std::move(camera));
   } else {
     RT3_ERROR("Integrator type unknown.");
   }
@@ -193,6 +123,28 @@ GeometricPrimitive * API::make_geometric_primitive(unique_ptr<Shape> &&shape,
         material,
         std::move(shape)
     );
+}
+
+Light * API::make_light( const ParamSet &ps_light /*, Bounds3f worldBox */)
+{
+    std::cout << ">>> Inside API::make_light()\n";
+    Light* light = nullptr;
+
+    std::string type = retrieve(ps_light, "type", std::string{"ambient"});
+    if(type == "ambient"){
+        light = create_ambient_light(ps_light);
+    }else if(type == "point"){
+        light = create_point_light(ps_light);
+    }/* else if(type == "spot"){
+        light = create_spotlight_light(ps_light);
+    }else if(type == "directional"){
+        light = create_directional_light(ps_light, worldBox);
+    }*/else{
+        RT3_ERROR("Light type unknown.");
+    }
+    
+    // Return the newly created integrator
+    return light;
 }
 
 // ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ
@@ -256,13 +208,18 @@ void API::world_end() {
 
   for(auto [obj_ps, mat] : global_primitives) {
     unique_ptr<Shape> shape(make_shape(obj_ps));
-
+  
     primitives.push_back(shared_ptr<Primitive>(make_geometric_primitive(std::move(shape), mat)));
   }
 
   unique_ptr<PrimList> prim_list = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
+
+  vector<shared_ptr<Light>> the_lights;
+  for (auto light_ps : lights) {
+    the_lights.push_back(shared_ptr<Light>(make_light(light_ps)));
+  }  
   
-  the_scene = make_unique<Scene>(std::move(prim_list), std::move(the_background));
+  the_scene = make_unique<Scene>(std::move(prim_list), std::move(the_background), std::move(the_lights));
   // MADE THE SCENE
 
   // MAKE THE INTEGRATOR -----------------------------------------------------------------------------------
@@ -361,7 +318,7 @@ void API::lookat(const ParamSet& ps) {
 
 void API::make_named_material(const ParamSet &ps) {
   std::cout << ">>> Inside API::make_named_material()\n";
-  VERIFY_SETUP_BLOCK("API::make_named_material");
+  VERIFY_WORLD_BLOCK("API::make_named_material");
 
   string material_name = retrieve(ps, "name", string());
 
@@ -398,6 +355,13 @@ void API::object( const ParamSet &ps ) {
   VERIFY_WORLD_BLOCK("API::object");
 
   global_primitives.push_back({ps, curr_material});
+}
+
+void API::light(const ParamSet &ps) {
+  std::cout << ">>> Inside API::light()\n";
+  VERIFY_WORLD_BLOCK("API::light");
+
+  lights.push_back(ps);
 }
 
 }  // namespace rt3

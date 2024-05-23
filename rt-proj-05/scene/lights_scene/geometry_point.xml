@@ -10,10 +10,10 @@
         <!-- <light_source type="point" I="0.95 0.95 0.95" scale="1 1 1" from="1 4 0" /> -->
 
         <!-- Material Library -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/materials.xml" />
+        <include filename="scene/lights_scene/materials.xml" />
 
         <!-- Objects -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/spheres.xml" />
+        <include filename="scene/lights_scene/spheres.xml" />
 
     <world_end/>
 </RT3>

@@ -63,6 +63,8 @@ using Point3i = glm::ivec3;
 using Point2i = glm::ivec2;
 using Point2f = glm::vec2;
 
+const real_type ERR = 1e-3;
+
 template <typename T, size_t S>
 std::ostream& operator<<(std::ostream& os, const std::array<T, S>& v) {
   os << "[ ";
@@ -82,6 +84,7 @@ class Material;
 class Surfel;
 class Shape;
 class Scene;
+class Light;
 class GeometricPrimitive;
 class FlatIntegrator;
 class NormalIntegrator;

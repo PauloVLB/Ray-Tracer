@@ -14,7 +14,9 @@ public:
 
     ~Sphere(){}
 
-    bool intersect_p(const Ray &r) const override;
+    real_type calc_delta(const Ray &r, real_type &A, real_type &B) const;
+
+    bool intersect_p(const Ray &r, real_type maxT ) const override;
     bool intersect(const Ray &r, shared_ptr<Surfel> &isect) const override;
 };
 

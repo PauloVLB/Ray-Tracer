@@ -142,7 +142,12 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
       vector<std::pair<param_type_e, string>> param_list{ 
         { param_type_e::COLOR, "color" },
         { param_type_e::STRING, "name" },
-        { param_type_e::STRING, "type" }
+        { param_type_e::STRING, "type" },
+        { param_type_e::COLOR, "ambient" },
+        { param_type_e::COLOR, "diffuse" },
+        { param_type_e::COLOR, "specular" },
+        { param_type_e::COLOR, "mirror" },
+        { param_type_e::INT, "glossiness" },
       };
       parse_parameters(p_element, param_list, /* out */ &ps);
       API::make_named_material(ps);
@@ -164,7 +169,10 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
     } else if (tag_name == "integrator") {
       std::cout << "INTEGRATOR GOT HERE" << std::endl;
       ParamSet ps;
-      vector<std::pair<param_type_e, string>> param_list{ { param_type_e::STRING, "type" } };
+      vector<std::pair<param_type_e, string>> param_list{ 
+        { param_type_e::STRING, "type" },
+        {param_type_e::INT, "depth"}, 
+      };
       parse_parameters(p_element, param_list, /* out */ &ps);
       API::integrator(ps);
     } else if(tag_name == "object") {
@@ -181,6 +189,22 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
     } else if(tag_name == "render_again") {
       API::world_begin();
       API::world_end();
+    } else if(tag_name == "light_source") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::STRING, "type"},
+          {param_type_e::COLOR, "L"},
+          {param_type_e::COLOR, "I"},
+          {param_type_e::VEC3F, "scale"},
+          {param_type_e::POINT3F, "from"},
+          {param_type_e::POINT3F, "to"},
+          {param_type_e::REAL, "cutoff"},
+          {param_type_e::REAL, "falloff"},
+      };
+      parse_parameters(p_element, param_list, &ps);
+
+      API::light(ps);
     }
     // else RT3_WARNING( "Undefined tag `" + tag_name + "` found!" );
 

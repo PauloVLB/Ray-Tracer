@@ -9,8 +9,10 @@
 #include "../cameras/orthographic.h"
 #include "../cameras/perspective.h"
 #include "../materials/flat.h"
+#include "../materials/ping_pong.h"
 #include "integrator.h"
 #include "scene.h"
+#include "light.h"
 
 
 //=== API Macro definitions
@@ -86,6 +88,7 @@ public:
   static vector<std::pair<ParamSet, shared_ptr<Material>>> global_primitives;
   static shared_ptr<Material> curr_material;
   static std::map<string, shared_ptr<Material>> named_materials;
+  static vector<ParamSet> lights;
 
 private:
   /// Current API state
@@ -114,6 +117,7 @@ private:
   static Integrator *make_integrator(const ParamSet &ps_integrator, unique_ptr<Camera> &&camera);
   static Shape *make_shape(const ParamSet &ps);
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
+  static Light * make_light( const ParamSet &ps_light /*, Bounds3f worldBox */);
 public:
   //=== API function begins here.
   static void init_engine(const RunningOptions &);
@@ -132,6 +136,7 @@ public:
   static void named_material(const ParamSet &ps);
   static void integrator(const ParamSet &ps);
   static void object(const ParamSet &ps);
+  static void light(const ParamSet &ps);
 };
 } // namespace rt3
 
