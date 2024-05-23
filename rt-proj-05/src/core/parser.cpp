@@ -147,7 +147,7 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
         { param_type_e::COLOR, "diffuse" },
         { param_type_e::COLOR, "specular" },
         { param_type_e::COLOR, "mirror" },
-        { param_type_e::INT, "glossiness" },
+        { param_type_e::REAL, "glossiness" },
       };
       parse_parameters(p_element, param_list, /* out */ &ps);
       API::make_named_material(ps);

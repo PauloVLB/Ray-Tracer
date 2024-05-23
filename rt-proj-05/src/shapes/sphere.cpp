@@ -18,7 +18,7 @@ namespace rt3 {
         
         real_type A, B;
         real_type delta = calc_delta(r, A, B);
-        if(delta >= -0.0001){
+        if(delta >= 0){
             //std::cout << "delta >= 0" << std::endl;
             real_type t[2] = {
                 (-B - (real_type)sqrt(delta)) / (2 * A),
@@ -53,7 +53,7 @@ namespace rt3 {
         real_type A, B;
         real_type delta = calc_delta(r, A, B);
 
-        if(delta >= -0.0001){
+        if(delta >= 0){
             real_type t[2] = {
                 (-B - (real_type)sqrt(delta)) / (2 * A),
                 (-B + (real_type)sqrt(delta)) / (2 * A),

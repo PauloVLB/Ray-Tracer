@@ -30,7 +30,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
         if(glm::dot(isect->wo, isect->n) < 0) return {};
 
         shared_ptr<PingPongMaterial> material = std::dynamic_pointer_cast<PingPongMaterial>(isect->primitive->get_material());
-
+        
         Color color;
         for(auto &light : scene->lights){
             if(typeid(*light) == typeid(AmbientLight)){
@@ -54,7 +54,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
                         real_type coef = std::max(real_type(0), glm::dot(isect->n, h));
                         coef = pow(coef, material->glossiness);
                         Color specularContrib = material->specular * lightColor * coef;
-                    
+
                         color = color + specularContrib;
                     }
                 }
@@ -71,6 +71,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
                 color = color + material->mirror * temp_L.value();
             }
         }
+
 
         return color;
     }

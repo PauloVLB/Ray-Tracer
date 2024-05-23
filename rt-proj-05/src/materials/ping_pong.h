@@ -8,14 +8,14 @@ namespace rt3{
 class PingPongMaterial : public Material{
 public:
     const Color ambient, diffuse, specular, mirror;
-    const int glossiness;
+    const real_type glossiness;
 
     PingPongMaterial(
         const Color &amb,
         const Color &diffus,
         const Color &spec,
         const Color &mirro,
-        int gloss
+        real_type gloss
     ) : ambient(amb), diffuse(diffus), specular(spec), mirror(mirro), glossiness(gloss) {}
 };
 
