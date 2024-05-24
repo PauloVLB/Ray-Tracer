@@ -29,17 +29,24 @@ namespace rt3 {
 
             Point3f contact;
             
-            if(t[0] > 0) contact = r(t[0]);
-            else if(t[1] > 0) contact = r(t[1]);
+            real_type cont_t = t[1];
+            if(t[0] > 0) {
+                contact = r(t[0]);
+                cont_t = t[0];
+            }
+            else if(t[1] > 0) {
+                contact = r(t[1]);
+                cont_t = t[1];
+            }
             else return false;
 
             Vector3f normal = glm::normalize(contact - center);
 
             isect = shared_ptr<Surfel>(new Surfel(
-                contact + normal * ERR,
+                contact + normal * 0.001f,
                 normal,
                 -r.d,
-                t[0]
+                cont_t
             ));
 
             return true;

@@ -63,7 +63,7 @@ using Point3i = glm::ivec3;
 using Point2i = glm::ivec2;
 using Point2f = glm::vec2;
 
-const real_type ERR = 1e-3;
+const real_type ERR = 1;
 
 template <typename T, size_t S>
 std::ostream& operator<<(std::ostream& os, const std::array<T, S>& v) {

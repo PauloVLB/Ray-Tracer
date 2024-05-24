@@ -62,7 +62,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
         }
 
         Vector3f new_dir = glm::normalize((ray.d) - 2 * (glm::dot(ray.d, isect->n))*isect->n);
-        Ray refl_ray = Ray(isect->p + new_dir * ERR, new_dir, 0.1);
+        Ray refl_ray = Ray(isect->p /* + new_dir * ERR */, new_dir, 0.1);
 
         if(currRecurStep < maxRecursionSteps){
             auto temp_L = Li(refl_ray, scene, currRecurStep + 1);
