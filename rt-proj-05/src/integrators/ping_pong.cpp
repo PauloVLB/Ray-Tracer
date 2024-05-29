@@ -40,7 +40,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
 
                 auto [lightColor, lightDir, visTester] = lightLi->sample_Li(isect);
 
-                if(visTester->unoccluded(scene)){ 
+                if(visTester->unoccluded(scene, isect->n)){ 
                     {
                         real_type coef = std::max(real_type(0), glm::dot(isect->n, -lightDir));
                         Color diffuseContrib = material->diffuse * lightColor * coef;
@@ -62,7 +62,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
         }
 
         Vector3f new_dir = glm::normalize((ray.d) - 2 * (glm::dot(ray.d, isect->n))*isect->n);
-        Ray refl_ray = Ray(isect->p /* + new_dir * ERR */, new_dir, 0.1);
+        Ray refl_ray = Ray(isect->p + new_dir * 0.5f, new_dir, 0.1);
 
         if(currRecurStep < maxRecursionSteps){
             auto temp_L = Li(refl_ray, scene, currRecurStep + 1);

@@ -43,7 +43,7 @@ namespace rt3 {
             Vector3f normal = glm::normalize(contact - center);
 
             isect = shared_ptr<Surfel>(new Surfel(
-                contact + normal * 0.001f,
+                contact /* + normal * 0.001f */,
                 normal,
                 -r.d,
                 cont_t
@@ -70,6 +70,12 @@ namespace rt3 {
             else if(t[1] > 0) return t[1] < maxT;
             else return false;
         } else return false;
+    }
+
+    Bounds3f Sphere::computeBounds() const{
+        Point3f radiusPoint{radius, radius, radius};
+
+        return Bounds3f{center - radiusPoint, center + radiusPoint};
     }
 
     Sphere *create_sphere(const ParamSet &ps) {

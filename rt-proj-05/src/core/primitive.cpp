@@ -22,6 +22,11 @@ bool PrimList::intersect_p(const Ray& r, real_type maxT ) const {
     return false;
 }
 
+GeometricPrimitive::GeometricPrimitive(std::shared_ptr<Material> mat, std::unique_ptr<Shape> &&s) :
+	 	PrimitiveBounds(s->computeBounds()),
+		material(mat), 
+		shape(std::move(s)) {}
+
 bool GeometricPrimitive::intersect_p( const Ray& r, real_type maxT  ) const {
     return shape->intersect_p(r, maxT); 
 }

@@ -10,10 +10,10 @@
         <light_source type="directional" L="0.4 0.4 0.4" scale="1 1 1" from="-1 0.2 0.5" to="0 0 1" />
 
         <!-- Material Library -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/materials.xml" />
+        <include filename="scene/lights_scene/materials.xml" />
 
         <!-- Objects -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/spheres.xml" />
+        <include filename="scene/lights_scene/spheres.xml" />
 
     <world_end/>
 </RT3>

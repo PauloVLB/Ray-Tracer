@@ -1,8 +1,50 @@
 #include "light.h"
 
 namespace rt3{
-    bool VisibilityTester::unoccluded(const std::unique_ptr<Scene>& scene){
-        Ray light_ray = Ray(light_surfel->p, light_surfel->wo);
-        return !scene->intersect_p(light_ray, light_surfel->time - ERR);
+    constexpr float origin() {return 1.0f / 32.0f;}
+    constexpr float float_scale() {return 1.0f / 65536.0f;}
+    constexpr float int_scale() {return 256.0f;}
+
+    float __int_as_float(int a) {
+        union {int a; float b;} u;
+
+        u.a = a;
+
+        return u.b;
+    }
+
+    int __float_as_int(float a) {
+        union {float a; int b;} u;
+
+        u.a = a;
+
+        return u.b;
+    }
+
+    Vector3f offset_ray(const Vector3f p, const Vector3f n){
+        Vector3i of_i (int_scale() * n.x, int_scale() * n.y, int_scale() * n.z);
+        Vector3f p_i (
+            __int_as_float((__float_as_int(p.x))+((p.x < 0) ? -of_i.x : of_i.x)),
+            __int_as_float((__float_as_int(p.y))+((p.y < 0) ? -of_i.y : of_i.y)),
+            __int_as_float((__float_as_int(p.z))+((p.z < 0) ? -of_i.z : of_i.z))
+        );
+
+        return Vector3f(fabsf(p.x)<origin() ? p.x+float_scale()*n.x:p_i.x,
+                        fabsf(p.y)<origin() ? p.y+float_scale()*n.y:p_i.y,
+                        fabsf(p.z)<origin() ? p.z+float_scale()*n.z:p_i.z);
+    }
+
+    // bool VisibilityTester::unoccluded(const std::unique_ptr<Scene>& scene){
+    //     Ray light_ray = Ray(light_surfel->p, light_surfel->wo, 0.1, 1);
+    //     return !scene->intersect_p(light_ray, light_surfel->time);
+    // }
+    bool VisibilityTester::unoccluded(const std::unique_ptr<Scene>& scene, const Vector3f& n) {
+        Point3f x = offset_ray(object_surfel->p,1000.0f*n); // TODO: Why 1000?
+        // Point3f x = p0.p + (float)0.001 * n; // Carlos Method
+
+        Ray r{x, light_surfel->p - x, 0, 1};
+        //std::shared_ptr<Surfel> isect;
+
+        return (!scene->intersect_p(r, object_surfel->time));
     }
 }

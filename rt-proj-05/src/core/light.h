@@ -15,7 +15,7 @@ public:
     VisibilityTester(const std::shared_ptr<Surfel>& obj, const std::shared_ptr<Surfel>& light):
         object_surfel(obj), light_surfel(light){}
 
-    bool unoccluded(const std::unique_ptr<Scene>& scene);
+    bool unoccluded(const std::unique_ptr<Scene>& scene, const Vector3f& n);
 };
 
 class Light {  

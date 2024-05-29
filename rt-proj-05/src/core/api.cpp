@@ -12,6 +12,7 @@
 #include "../lights/ambient.h"
 #include "../lights/point.h"
 #include "../lights/spot.h"
+#include "../lights/directional.h"
 
 namespace rt3 {
 
@@ -125,21 +126,20 @@ GeometricPrimitive * API::make_geometric_primitive(unique_ptr<Shape> &&shape,
     );
 }
 
-Light * API::make_light( const ParamSet &ps_light /*, Bounds3f worldBox */)
-{
+Light * API::make_light( const ParamSet &ps_light, Bounds3f world_box) {
     std::cout << ">>> Inside API::make_light()\n";
     Light* light = nullptr;
 
     std::string type = retrieve(ps_light, "type", std::string{"ambient"});
-    if(type == "ambient"){
+    if(type == "ambient") {
         light = create_ambient_light(ps_light);
-    }else if(type == "point"){
+    }else if(type == "point") {
         light = create_point_light(ps_light);
-    } else if(type == "spot"){
+    } else if(type == "spot") {
         light = create_spotlight_light(ps_light);
-    }/*else if(type == "directional"){
-        light = create_directional_light(ps_light, worldBox);
-    }*/else{
+    }else if(type == "directional") {
+        light = create_directional_light(ps_light, world_box);
+    }else{
         RT3_ERROR("Light type unknown.");
     }
     
@@ -204,19 +204,23 @@ void API::world_end() {
   std::unique_ptr<Background> the_background{ make_background(render_opt->bkg_type,
                                                               render_opt->bkg_ps) };
 
-  vector<std::shared_ptr<Primitive>> primitives;
+  vector<std::shared_ptr<PrimitiveBounds>> primitives;
+
+  Bounds3f world_box;
 
   for(auto [obj_ps, mat] : global_primitives) {
     unique_ptr<Shape> shape(make_shape(obj_ps));
-  
-    primitives.push_back(shared_ptr<Primitive>(make_geometric_primitive(std::move(shape), mat)));
+
+    world_box = Bounds3f::insert(world_box, shape->computeBounds());
+
+    primitives.push_back(shared_ptr<PrimitiveBounds>(make_geometric_primitive(std::move(shape), mat)));
   }
 
   unique_ptr<PrimList> prim_list = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
 
   vector<shared_ptr<Light>> the_lights;
   for (auto light_ps : lights) {
-    the_lights.push_back(shared_ptr<Light>(make_light(light_ps)));
+    the_lights.push_back(shared_ptr<Light>(make_light(light_ps, world_box)));
   }  
   
   the_scene = make_unique<Scene>(std::move(prim_list), std::move(the_background), std::move(the_lights));

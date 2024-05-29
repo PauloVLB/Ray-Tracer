@@ -117,7 +117,7 @@ private:
   static Integrator *make_integrator(const ParamSet &ps_integrator, unique_ptr<Camera> &&camera);
   static Shape *make_shape(const ParamSet &ps);
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
-  static Light * make_light( const ParamSet &ps_light /*, Bounds3f worldBox */);
+  static Light * make_light( const ParamSet &ps_light, Bounds3f worldBox);
 public:
   //=== API function begins here.
   static void init_engine(const RunningOptions &);
