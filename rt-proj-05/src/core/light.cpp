@@ -42,9 +42,9 @@ namespace rt3{
         Point3f x = offset_ray(object_surfel->p,1000.0f*n); // TODO: Why 1000?
         // Point3f x = p0.p + (float)0.001 * n; // Carlos Method
 
-        Ray r{x, light_surfel->p - x, 0, 1};
+        Ray r{x, light_surfel->p - x};
         //std::shared_ptr<Surfel> isect;
 
-        return (!scene->intersect_p(r, object_surfel->time));
+        return (!scene->intersect_p(r, object_surfel->time - 1.0f));
     }
 }
