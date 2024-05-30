@@ -5,7 +5,21 @@
 
 #include "paramset.h"
 #include "rt3.h"
+#include "light.h"
+#include "scene.h"
 #include "camera.h"
+#include "integrator.h"
+#include "background.h"
+
+#include "color.h"
+
+#include "../materials/flat.h"
+#include "../materials/ping_pong.h"
+
+#include "../integrators/flat.h"
+#include "../integrators/normal_map.h"
+#include "../integrators/ping_pong.h"
+
 #include "../cameras/orthographic.h"
 #include "../cameras/perspective.h"
 #include "../materials/flat.h"

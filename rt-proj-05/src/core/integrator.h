@@ -1,11 +1,11 @@
 #ifndef INTEGRATOR_H
 #define INTEGRATOR_H
 
-#include "scene.h"
 #include "camera.h"
 #include "surfel.h"
+#include "scene.h"
 
-namespace  rt3 {
+namespace rt3 {
 
 class Integrator {
 public:

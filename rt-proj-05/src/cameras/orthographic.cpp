@@ -16,7 +16,7 @@ Ray OrthographicCamera::generate_ray(int i, int j) {
 
 OrthographicCamera* create_orthographic_camera(
     const ParamSet& ps_camera,
-    const ParamSet& ps_look_at, unique_ptr<Film>&& the_film
+    const ParamSet& ps_look_at, std::unique_ptr<Film>&& the_film
 ) {
     
     Point3f lf = retrieve( ps_look_at, "look_from",  Point3f({0.0, 0.1, 0.0}));

@@ -1,1 +1,1 @@
-g++ -Wall -pedantic -std=c++17 src/core/api.cpp src/core/background.cpp src/core/error.cpp src/core/film.cpp src/core/image_io.cpp src/core/parser.cpp src/ext/lodepng.cpp src/ext/tinyxml2.cpp src/main/rt3.cpp src/core/camera.cpp src/core/ray.cpp src/core/sphere.cpp src/core/sphere.cpp src/cameras/orthographic.cpp src/cameras/perspective.cpp src/core/color.cpp -o basic_rt3
+g++ -std=c++17 -o build_src src/core/*.cpp src/integrators/*.cpp src/shapes/*.cpp src/main/*.cpp src/materials/*.cpp src/cameras/*.cpp src/ext/*.cpp src/lights/*.cpp

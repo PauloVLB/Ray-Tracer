@@ -1,12 +1,14 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "ray.h"
-#include "scene.h"
+#include "rt3.h"
+#include "rt3-base.h"
 #include "surfel.h"
+#include "scene.h"
 
-namespace rt3{
+namespace rt3 {
 // Verifica se há oclusão entre dois pontos de contato.
+
 class VisibilityTester {
 public:
     std::shared_ptr<Surfel> object_surfel, light_surfel;

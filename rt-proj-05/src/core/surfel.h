@@ -16,7 +16,7 @@ public:
 	Vector3f n;       //!< The surface normal.
 	Vector3f wo;      //!< Outgoing direction of light, which is -ray.
 	float time; 	  // This was missing 
-	shared_ptr<const GeometricPrimitive> primitive=nullptr; //!< Pointer to the primitive.
+	std::shared_ptr<const GeometricPrimitive> primitive=nullptr; //!< Pointer to the primitive.
 
 };
 

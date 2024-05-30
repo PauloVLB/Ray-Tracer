@@ -2,7 +2,7 @@
 
 namespace rt3 {
 
-pair<real_type, real_type> Camera::get_uv(int i, int j) {
+std::pair<real_type, real_type> Camera::get_uv(int i, int j) {
     real_type u = sw.width() * (j + 0.5);
     u /= film->width();
     u += sw.l;
@@ -13,7 +13,7 @@ pair<real_type, real_type> Camera::get_uv(int i, int j) {
     
     return {u, v};
 }
-Camera::Camera(unique_ptr<Film> &&_film, Point3f lf, Point3f la, Vector3f up, ScreenWindow _sw) 
+Camera::Camera(std::unique_ptr<Film> &&_film, Point3f lf, Point3f la, Vector3f up, ScreenWindow _sw) 
 : film(std::move(_film)), e(lf), sw(_sw)
 {
     Vector3f gaze = la - lf;

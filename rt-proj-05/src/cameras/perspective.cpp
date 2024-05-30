@@ -15,7 +15,7 @@ Ray PerspectiveCamera::generate_ray(int i, int j) {
 PerspectiveCamera* create_perspective_camera(
     const ParamSet& ps_camera,
     const ParamSet& ps_lookat, 
-    unique_ptr<Film>&& the_film
+    std::unique_ptr<Film>&& the_film
 ) {
     ScreenWindow sw;
 

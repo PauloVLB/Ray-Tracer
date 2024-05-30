@@ -2,10 +2,10 @@
 #define RAY_H
 
 #include "rt3.h"
-#include "rt3-base.h"
+//#include "rt3-base.h"
 
 namespace rt3 {
-class Primitive;
+//class Primitive;
 
 class Ray {
     public:

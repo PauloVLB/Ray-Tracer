@@ -2,7 +2,7 @@
 
 namespace rt3{
 
-bool Bounds3f::intersect_box(const Ray &ray, pair<real_type, real_type> &hits) const {
+bool Bounds3f::intersect_box(const Ray &ray, std::pair<real_type, real_type> &hits) const {
     hits = {-1e18, 1e18};
 
     for(int i = 0; i < 3; i++) {
@@ -24,7 +24,7 @@ bool Bounds3f::intersect_box(const Ray &ray, pair<real_type, real_type> &hits) c
 
 
 bool Bounds3f::intersect_p(const Ray &ray, real_type maxT) const{
-    pair<real_type, real_type> hits;
+    std::pair<real_type, real_type> hits;
   
     bool intersects = intersect_box(ray, hits);
   

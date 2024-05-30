@@ -1,12 +1,12 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "integrator.h"
-#include "camera.h"
+//#include "integrator.h"
+//#include "camera.h"
 #include "background.h"
-#include "rt3.h"
-#include "background.h"
+//#include "rt3.h"
 #include "primitive.h"
+#include "light.h"
 #include "light.h"
 
 namespace rt3 {

@@ -27,6 +27,7 @@ set( RT3_SOURCE_DIR "src" )
 #=== main  target ===
 file( GLOB SOURCE_BASICRT3 ${RT3_SOURCE_DIR}/cameras/*.cpp
                            ${RT3_SOURCE_DIR}/shapes/*.cpp
+                           ${RT3_SOURCE_DIR}/lights/*.cpp
                            ${RT3_SOURCE_DIR}/integrators/*.cpp
                            ${RT3_SOURCE_DIR}/materials/*.cpp
                            ${RT3_SOURCE_DIR}/lights/*.cpp

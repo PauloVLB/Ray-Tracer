@@ -19,7 +19,7 @@ public:
         min_point(min_p), 
         max_point(max_p){}
 
-    bool intersect_box(const Ray &ray, pair<real_type, real_type> &hits) const;
+    bool intersect_box(const Ray &ray, std::pair<real_type, real_type> &hits) const;
     bool intersect_p(const Ray &ray, real_type maxT) const;
 
     static Bounds3f insert(const Bounds3f &a, const Bounds3f &b);

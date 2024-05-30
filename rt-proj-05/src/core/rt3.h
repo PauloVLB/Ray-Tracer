@@ -88,6 +88,8 @@ class Light;
 class GeometricPrimitive;
 class FlatIntegrator;
 class NormalIntegrator;
+class Light;
+class Scene;
 
 //=== aliases
 using real_type = float;

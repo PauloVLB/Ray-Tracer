@@ -1,5 +1,4 @@
 #include "api.h"
-#include "background.h"
 
 #include <chrono>
 #include <memory>
@@ -91,6 +90,8 @@ Integrator * API::make_integrator(const ParamSet &ps_integrator, unique_ptr<Came
     integrator = create_flat_integrator(std::move(camera));
   } else if(type == "normal_map") {
     integrator = create_normal_integrator(std::move(camera));
+  } else if(type == "blinn_phong") {
+    integrator = create_ping_pong_integrator(ps_integrator, std::move(camera));
   } else if(type == "blinn_phong") {
     integrator = create_ping_pong_integrator(ps_integrator, std::move(camera));
   } else {
@@ -322,6 +323,7 @@ void API::lookat(const ParamSet& ps) {
 
 void API::make_named_material(const ParamSet &ps) {
   std::cout << ">>> Inside API::make_named_material()\n";
+  VERIFY_WORLD_BLOCK("API::make_named_material");
   VERIFY_WORLD_BLOCK("API::make_named_material");
 
   string material_name = retrieve(ps, "name", string());

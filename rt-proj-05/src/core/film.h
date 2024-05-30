@@ -4,6 +4,7 @@
 #include "rt3.h"
 #include "error.h"
 #include "paramset.h"
+#include "color.h"
 
 namespace rt3 {
 

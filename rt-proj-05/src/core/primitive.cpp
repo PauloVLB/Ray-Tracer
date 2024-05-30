@@ -18,6 +18,7 @@ bool PrimList::intersect(const Ray &r, shared_ptr<Surfel> &isect ) const {
 bool PrimList::intersect_p(const Ray& r, real_type maxT ) const {
     for(auto &prim : primitives) {
         if(prim->intersect_p(r, maxT)) return true;
+        if(prim->intersect_p(r, maxT)) return true;
     }
     return false;
 }

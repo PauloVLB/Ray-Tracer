@@ -15,7 +15,7 @@ public:
 
 OrthographicCamera* create_orthographic_camera(
     const ParamSet& ps_camera,
-    const ParamSet& ps_look_at, unique_ptr<Film>&& the_film
+    const ParamSet& ps_look_at, std::unique_ptr<Film>&& the_film
 );
 
 }
