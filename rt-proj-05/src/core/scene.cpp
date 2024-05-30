@@ -5,7 +5,7 @@ namespace rt3 {
         return primitive->intersect(r, isect);
     }
 
-    bool Scene::intersect_p(const Ray &r, real_type maxT) const {
+    bool Scene::intersect_p(const Ray &r, real_type maxT ) const {
         return primitive->intersect_p(r, maxT);
     }
 }

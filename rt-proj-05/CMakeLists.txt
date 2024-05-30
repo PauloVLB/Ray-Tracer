@@ -14,7 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 # Set "manually" paths that need to be considered while compiling/linking
 include_directories( cameras
                      materials
-                     light
+                     lights
                      integrators
                      core
                      ext )
@@ -30,8 +30,9 @@ file( GLOB SOURCE_BASICRT3 ${RT3_SOURCE_DIR}/cameras/*.cpp
                            ${RT3_SOURCE_DIR}/lights/*.cpp
                            ${RT3_SOURCE_DIR}/integrators/*.cpp
                            ${RT3_SOURCE_DIR}/materials/*.cpp
-                           ${RT3_SOURCE_DIR}/ext/*.cpp
+                           ${RT3_SOURCE_DIR}/lights/*.cpp
                            ${RT3_SOURCE_DIR}/core/*.cpp
+                           ${RT3_SOURCE_DIR}/ext/*.cpp
                            ${RT3_SOURCE_DIR}/main/*.cpp
                         )
 add_executable(basic_rt3 ${SOURCE_BASICRT3})

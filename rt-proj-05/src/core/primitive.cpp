@@ -3,22 +3,32 @@
 namespace rt3 {
 
 bool PrimList::intersect(const Ray &r, shared_ptr<Surfel> &isect ) const {
+    shared_ptr<Surfel> currIsect(nullptr);
     for(auto &prim : primitives) {
-        if(prim->intersect(r, isect)) {
-            return true;
+        if(prim->intersect(r, currIsect)) {
+            if(isect == nullptr || currIsect->time < isect->time){
+                isect = currIsect;
+                isect->primitive = std::dynamic_pointer_cast<GeometricPrimitive>(prim);
+            }
         }
     }
-    return false;
+    return (isect != nullptr);
 }
 
-bool PrimList::intersect_p(const Ray& r, real_type maxT) const {
+bool PrimList::intersect_p(const Ray& r, real_type maxT ) const {
     for(auto &prim : primitives) {
+        if(prim->intersect_p(r, maxT)) return true;
         if(prim->intersect_p(r, maxT)) return true;
     }
     return false;
 }
 
-bool GeometricPrimitive::intersect_p( const Ray& r, real_type maxT ) const {
+GeometricPrimitive::GeometricPrimitive(std::shared_ptr<Material> mat, std::unique_ptr<Shape> &&s) :
+	 	PrimitiveBounds(s->computeBounds()),
+		material(mat), 
+		shape(std::move(s)) {}
+
+bool GeometricPrimitive::intersect_p( const Ray& r, real_type maxT  ) const {
     return shape->intersect_p(r, maxT); 
 }
 

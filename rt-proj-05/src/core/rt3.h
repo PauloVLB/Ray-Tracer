@@ -36,7 +36,7 @@ using std::tuple;
 # include "../ext/glm/ext/vector_int2.hpp"
 # include "../ext/glm/ext/vector_int3.hpp"
 
-//#include "color.h"
+#include "color.h"
 //#include "ray.h"
 
 //== Alias to the chosen data structure to implement a dictionary.
@@ -63,6 +63,8 @@ using Point3i = glm::ivec3;
 using Point2i = glm::ivec2;
 using Point2f = glm::vec2;
 
+const real_type ERR = 1;
+
 template <typename T, size_t S>
 std::ostream& operator<<(std::ostream& os, const std::array<T, S>& v) {
   os << "[ ";
@@ -81,6 +83,8 @@ class Camera;
 class Material;
 class Surfel;
 class Shape;
+class Scene;
+class Light;
 class GeometricPrimitive;
 class FlatIntegrator;
 class NormalIntegrator;

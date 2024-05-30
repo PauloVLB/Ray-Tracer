@@ -1,33 +1,32 @@
-#ifndef SPOT_H
-#define SPOT_H
+#ifndef SPOTLIGHT_H
+#define SPOTLIGHT_H
 
 #include "../core/light.h"
-#include "hit.h"
 
-namespace rt3 {
+namespace rt3{
 
-class SpotLight : public LightLi {
+class SpotlightLight : public LightLi{
 public:
-  Point3f pos;
-  Vector3f dir;
-  real_type cutoff, falloff; // I considered that this will arrive as radians 
+    Point3f position;
+    Vector3f lightDirection;
+    real_type cutoff, falloff;
+    real_type angleInterval;
 
-  SpotLight(const Color& c,
-            const Vector3f& scl,
-            const Point3f& pos,
-            const Vector3f& dir,
-            real_type angle,
-            real_type falloff)
-      : LightLi(c, scl), pos(pos), dir(normalize(dir)), cutoff(angle), falloff(falloff) {}
+    SpotlightLight(
+        const Color &c, const Vector3f &scl, const Point3f &pos,
+        const Vector3f& dir, real_type coff, real_type foff):
+        LightLi(c, scl), position(pos), lightDirection(dir), cutoff(coff), falloff(foff){
+            angleInterval = cutoff - falloff; 
+        }
 
-  virtual void preprocess(const Scene&) override {}
-  tuple<Color, Vector3f, unique_ptr<VisibilityTester>> sample_Li(
-    const shared_ptr<Surfel>& hit) override {}
-  Vector3f normalize_light(const Vector3f& dir) {}
-  SpotLight* create_spot_light(const ParamSet& ps) {}
-  Color scaleColor(const Vector3f& vec) {}
+    
+    tuple<Color, Vector3f, unique_ptr<VisibilityTester>> sample_Li(const shared_ptr<Surfel>& hit) override;
+
 };
 
-};  // namespace rt3
+SpotlightLight* create_spotlight_light( const ParamSet &ps );
+
+}
+
 
 #endif

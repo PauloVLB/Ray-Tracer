@@ -7,6 +7,7 @@
 //#include "rt3.h"
 #include "primitive.h"
 #include "light.h"
+#include "light.h"
 
 namespace rt3 {
 class Scene {
@@ -15,7 +16,7 @@ class Scene {
         std::shared_ptr<Primitive> primitive; // The scene graph of objects, acceleration structure.
         std::vector<shared_ptr<Light>> lights; // list of lights
 
-        Scene( std::shared_ptr<Primitive> &&prim, std::unique_ptr< Background > &&bkg, vector<std::shared_ptr<Light>> &&lghts)
+        Scene( std::shared_ptr<Primitive> &&prim, std::unique_ptr< Background > &&bkg, vector<shared_ptr<Light>> &&lghts)
              : background(std::move(bkg)), primitive(std::move(prim)), lights(std::move(lghts))
         {/* empty */}
 

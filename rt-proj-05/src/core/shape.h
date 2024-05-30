@@ -3,6 +3,7 @@
 
 #include "paramset.h"
 #include "surfel.h"
+#include "bounds.h"
 
 namespace rt3{
 
@@ -12,7 +13,9 @@ public:
 
     virtual ~Shape(){}
 
-    virtual bool intersect_p(const Ray &r, real_type maxT) const = 0;
+    virtual Bounds3f computeBounds() const = 0;
+
+    virtual bool intersect_p(const Ray &r, real_type maxT ) const = 0;
     virtual bool intersect(const Ray &r, std::shared_ptr<Surfel> &isect) const = 0;
 };
 

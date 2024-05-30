@@ -6,6 +6,7 @@
 #include "surfel.h"
 #include "shape.h"
 #include "material.h"
+#include "bounds.h"
 
 namespace rt3{
 
@@ -16,11 +17,24 @@ public:
 	virtual bool intersect_p( const Ray& r, real_type maxT ) const = 0;
 };
 
-class AggregatePrimitive : public Primitive{
+class PrimitiveBounds : public Primitive {
 public:
-	vector<std::shared_ptr<Primitive>> primitives;
+	Bounds3f bound_box;
+	PrimitiveBounds(Bounds3f bb):bound_box(bb){}
+	virtual ~PrimitiveBounds(){}
+	Bounds3f getBoundBox() { return bound_box; }
+};
 
-	AggregatePrimitive(vector<std::shared_ptr<Primitive>> &&prim) : primitives(std::move(prim)) {}
+class AggregatePrimitive : public PrimitiveBounds {
+public:
+	vector<std::shared_ptr<PrimitiveBounds>> primitives;
+
+	AggregatePrimitive(vector<std::shared_ptr<PrimitiveBounds>> &&prim) : 
+		PrimitiveBounds(prim[0]->getBoundBox()), primitives(std::move(prim)) {
+			for(int i = 1; i < (int) primitives.size(); i++) {
+				bound_box = Bounds3f::insert(bound_box, primitives[i]->getBoundBox());
+			}
+		}
 
 	virtual ~AggregatePrimitive(){};
 };
@@ -29,7 +43,7 @@ public:
 class PrimList : public AggregatePrimitive{
 public:
 
-	PrimList(vector<std::shared_ptr<Primitive>> &&prim):AggregatePrimitive(std::move(prim)){}
+	PrimList(vector<std::shared_ptr<PrimitiveBounds>> &&prim) : AggregatePrimitive(std::move(prim)){}
 
 	~PrimList(){};
 
@@ -39,17 +53,16 @@ public:
 
 };
 
-class GeometricPrimitive : public Primitive, public std::enable_shared_from_this<GeometricPrimitive>{
+class GeometricPrimitive : public PrimitiveBounds, public std::enable_shared_from_this<GeometricPrimitive>{
 public:
 	std::shared_ptr<Material> material;
 	std::unique_ptr<Shape> shape;
 
-	GeometricPrimitive(std::shared_ptr<Material> mat, std::unique_ptr<Shape> &&s) : material(mat), 
-												shape(std::move(s)) {}
+	GeometricPrimitive(std::shared_ptr<Material> mat, std::unique_ptr<Shape> &&s);
 
 	~GeometricPrimitive(){};
 
-	bool intersect_p( const Ray& r, real_type maxT ) const override;
+	bool intersect_p( const Ray& r, real_type maxT  ) const override;
 
 	bool intersect( const Ray& r, std::shared_ptr<Surfel> &isect ) const override;
 

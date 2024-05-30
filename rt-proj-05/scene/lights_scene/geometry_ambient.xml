@@ -9,10 +9,10 @@
         <light_source type="ambient" L="0.1 0.1 0.1" flux="1" scale="1 1 1" />
 
         <!-- Material Library -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/materials.xml" />
+        <include filename="scene/lights_scene/materials.xml" />
 
         <!-- Objects -->
-        <include filename="../scenes/projects_references/proj_05_blinn_phong/lights_scene/spheres.xml" />
+        <include filename="scene/lights_scene/spheres.xml" />
 
     <world_end/>
 </RT3>

@@ -1,43 +1,51 @@
 #include "spot.h"
-#include "directional.h"
-#include "hit.h"
 
-namespace rt3 {
+namespace rt3{
 
-Color vectorToColor(const Vector3f& vec) { return Color(vec.x, vec.y, vec.z); }
+tuple<Color, Vector3f, unique_ptr<VisibilityTester>> SpotlightLight::sample_Li(const shared_ptr<Surfel>& hit){
 
-tuple<Color, Vector3f, unique_ptr<VisibilityTester>> SpotLight::sample_Li(
-  const shared_ptr<Surfel>& hit) {
-  Vector3f lightDir = normalize(pos - hit->p);
-  real_type t = dot(lightDir, dir);
+    Vector3f direction = hit->p - position;
+    real_type angleCos = glm::dot(lightDirection, glm::normalize(direction));
+    real_type angle = Degrees(acos(angleCos));
 
-  if (t > cutoff) {
-    Color intensity = color_int * vectorToColor(scale);
-    if (t < falloff) {
-        float smothCriminal = (t - falloff) / (cutoff - falloff); // forgive me about this joke
-        intensity = intensity * smothCriminal;
+    shared_ptr<Surfel> lightSurfel = make_shared<Surfel>(
+        position,  // p
+        Vector3f(),
+        glm::normalize(direction),
+        glm::length(direction)
+    );
+
+    
+    Color finalColor;
+    if(angle > cutoff){
+        finalColor = {0,0,0};
+    }else if(angle > falloff){
+        finalColor = color_int * pow(1 - ((angle - falloff) / angleInterval), 4);
+    }else{
+        finalColor = color_int;
     }
-    auto visTester = std::make_unique<VisibilityTester>(
-      hit, std::make_shared<Surfel>(Surfel{ pos, Vector3f(0, 0, 0), Vector3f(0, 0, 0), 0.0f }));
-    return std::make_tuple(intensity, lightDir, std::move(visTester));
-  } else {
-    Color ambientIndex = color_int * 0.1f;
-    return std::make_tuple(ambientIndex, lightDir, nullptr);
-  }
+
+    VisibilityTester *visTester = new VisibilityTester(hit, lightSurfel);
+
+    return tuple<Color, Vector3f, unique_ptr<VisibilityTester>>{
+        finalColor,
+        glm::normalize(direction),
+        unique_ptr<VisibilityTester>(visTester),
+    };
 }
 
-SpotLight* create_spot_light(const ParamSet& ps) {
+SpotlightLight* create_spotlight_light( const ParamSet &ps ){
     Point3f from = retrieve(ps, "from", Point3f());
     Point3f to = retrieve(ps, "to", Point3f());
 
-    return new SpotLight(
-        retrieve(ps, "I", Color()), 
-        retrieve(ps, "scale", Vector3f()), 
+    return new SpotlightLight(
+        retrieve(ps, "I", Color()),
+        retrieve(ps, "scale", Vector3f()),
         from,
-        normalize(to - from), 
+        glm::normalize(to - from),
         retrieve(ps, "cutoff", real_type()),
         retrieve(ps, "falloff", real_type())
     );
 }
 
-}  // namespace rt3
+}

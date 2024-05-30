@@ -7,17 +7,19 @@ namespace rt3{
 
 class PingPongIntegrator : public SamplerIntegrator {
 private:
-    const int max_depth;
+    const int maxRecursionSteps;
 public:
     ~PingPongIntegrator(){};
     PingPongIntegrator( unique_ptr<Camera> &&_camera, int depth ):
-        SamplerIntegrator(std::move(_camera)), max_depth(depth){}
+        SamplerIntegrator(std::move(_camera)), maxRecursionSteps(depth){}
 
-    optional<Color> Li(const Ray&, const unique_ptr<Scene>&) const override;
-    optional<Color> recursiveLi(const Ray&, const unique_ptr<Scene>&, int depth) const;
+    std::optional<Color> Li(const Ray&, const unique_ptr<Scene>&) const override;
+    std::optional<Color> Li(const Ray&, const unique_ptr<Scene>&, int currRecurStep) const;
 };
 
+
 PingPongIntegrator* create_ping_pong_integrator(const ParamSet &, unique_ptr<Camera> &&);
+
 
 };
 

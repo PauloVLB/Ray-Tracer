@@ -7,7 +7,7 @@ tuple<Color, Vector3f, unique_ptr<VisibilityTester>> PointLight::sample_Li(const
     Vector3f direction = hit->p - position;
 
     shared_ptr<Surfel> lightSurfel = make_shared<Surfel>(
-        position,  // p
+        position, 
         Vector3f(),
         glm::normalize(direction),
         glm::length(direction)
@@ -17,7 +17,7 @@ tuple<Color, Vector3f, unique_ptr<VisibilityTester>> PointLight::sample_Li(const
 
     return tuple<Color, Vector3f, unique_ptr<VisibilityTester>>{
         color_int,
-        glm::length(direction),
+        glm::normalize(direction),
         unique_ptr<VisibilityTester>(visTester),
     };
 }

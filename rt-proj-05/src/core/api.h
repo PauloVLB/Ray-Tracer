@@ -22,12 +22,11 @@
 
 #include "../cameras/orthographic.h"
 #include "../cameras/perspective.h"
-
-#include "../shapes/sphere.h"
-
-#include "../lights/ambient.h"
-#include "../lights/point.h"
-#include "../lights/directional.h"
+#include "../materials/flat.h"
+#include "../materials/ping_pong.h"
+#include "integrator.h"
+#include "scene.h"
+#include "light.h"
 
 
 //=== API Macro definitions
@@ -131,8 +130,8 @@ private:
   static Material *make_material( const ParamSet &ps_material);
   static Integrator *make_integrator(const ParamSet &ps_integrator, unique_ptr<Camera> &&camera);
   static Shape *make_shape(const ParamSet &ps);
-  static Light *make_light(const ParamSet &ps);
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
+  static Light * make_light( const ParamSet &ps_light, Bounds3f worldBox);
 public:
   //=== API function begins here.
   static void init_engine(const RunningOptions &);

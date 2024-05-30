@@ -8,7 +8,7 @@ PingPongMaterial * create_ping_pong_material( const ParamSet &ps ){
         retrieve(ps, "diffuse", Color()),
         retrieve(ps, "specular", Color()),
         retrieve(ps, "mirror", Color()),
-        retrieve(ps, "glossiness", int())
+        retrieve(ps, "glossiness", real_type(256))
     );
 }
 

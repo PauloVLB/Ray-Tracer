@@ -1,46 +1,39 @@
 #include "directional.h"
-#include "hit.h"
 
-namespace rt3 {
+namespace rt3{
 
-tuple<Color, Vector3f, unique_ptr<VisibilityTester>> DirectionalLight::sample_Li(const shared_ptr<Surfel>& hit) {
-    Vector3f lightDirection = glm::normalize(lightDir);
-    Ray source(hit->p, -lightDirection);
-    float hit_point;
-    shared_ptr<Surfel> surface;
+tuple<Color, Vector3f, unique_ptr<VisibilityTester>> DirectionalLight::sample_Li(const shared_ptr<Surfel>& hit){
 
-    if(!bounds.intersect(source, &hit_point, &surface)) {
-        std::cout << "DID NOT HIT ==>> MISSED" << std::endl;
-        return std::make_tuple(Color(), Vector3f(), nullptr);
-    }
+    Point3f position = hit->p + (direction * -min_dist);
 
     shared_ptr<Surfel> lightSurfel = make_shared<Surfel>(
-        surface->p, 
+        position, 
         Vector3f(),
-        lightDirection,
-        std::numeric_limits<float>::infinity() // This really should be infinity or from light source ?
+        direction,
+        min_dist
     );
 
-    unique_ptr<VisibilityTester> visTester = std::make_unique<VisibilityTester>(hit, lightSurfel);
+    VisibilityTester *visTester = new VisibilityTester(hit, lightSurfel);
 
-    return std::make_tuple(color_int, lightDirection, std::move(visTester));
-
+    return tuple<Color, Vector3f, unique_ptr<VisibilityTester>>{
+        color_int,
+        direction,
+        unique_ptr<VisibilityTester>(visTester),
+    };
 }
 
-DirectionalLight* create_directional_light(const ParamSet& ps) {
+DirectionalLight* create_directional_light( const ParamSet &ps, Bounds3f worldBox ){
     Point3f from = retrieve(ps, "from", Point3f());
     Point3f to = retrieve(ps, "to", Point3f());
+
+    real_type world_diag = glm::length(worldBox.min_point - worldBox.max_point);
 
     return new DirectionalLight(
         retrieve(ps, "L", Color()),
         retrieve(ps, "scale", Vector3f()),
-        normalize(to - from),
-        from
+        glm::normalize(to - from),
+        world_diag
     );
 }
 
-Vector3f DirectionalLight::normalize_light(const Vector3f& d) {
-    return glm::normalize(-d); // Maybe should replace the normalize lightDirection from sample_Li
 }
-
-} // namespace rt3
