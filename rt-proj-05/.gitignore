@@ -3,3 +3,4 @@ build
 *.swp
 images
 src/tags
+.vscode

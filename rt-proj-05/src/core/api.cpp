@@ -258,6 +258,7 @@ void API::world_end() {
 
     //std::vector<real_type> cw = retrieve(render_opt->film_ps, "crop_window", std::vector<real_type>{ 0, 1, 0, 1 });
     the_integrator->render(the_scene);  // TODO: This is the ray tracer's  main loop.
+
     auto end = std::chrono::steady_clock::now();
     //================================================================================
     auto diff = end - start;  // Store the time difference between start and end
