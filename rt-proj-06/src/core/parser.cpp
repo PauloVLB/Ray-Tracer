@@ -180,7 +180,18 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
       vector<std::pair<param_type_e, string>> param_list{ 
         { param_type_e::STRING, "type" },
         { param_type_e::REAL, "radius" },
-        { param_type_e::POINT3F, "center" }
+        { param_type_e::POINT3F, "center" },
+        
+        // TriangleMesh
+        { param_type_e::INT , "ntriangles" },            
+        { param_type_e::ARR_INT , "indices" },           
+        { param_type_e::ARR_VEC3F , "vertices" },         
+        { param_type_e::ARR_VEC3F , "normals" },          
+        { param_type_e::ARR_POINT2F , "uv" },             
+        { param_type_e::BOOL , "reverse_vertex_order" }, 
+        { param_type_e::BOOL , "compute_normals" },      
+        { param_type_e::BOOL , "backface_cull" },        
+        { param_type_e::STRING , "filename" }
       };
       parse_parameters(p_element, param_list, /* out */ &ps);
       API::object(ps);
