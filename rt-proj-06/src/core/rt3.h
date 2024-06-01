@@ -145,6 +145,13 @@ struct ScreenWindow {
  */
 //
 inline float Lerp(float t, float v1, float v2) { return (1.F - t) * v1 + t * v2; }
+inline Vector3f Lerp(float t, Vector3f v1, Vector3f v2) { 
+  return Vector3f(
+    Lerp(t, v1[0], v2[0]),
+    Lerp(t, v1[1], v2[1]),
+    Lerp(t, v1[2], v2[2])
+  );
+}
 
 /// Clamp T to [low,high].
 template <typename T, typename U, typename V> inline T Clamp(T val, U low, V high) {

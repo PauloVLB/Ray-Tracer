@@ -31,26 +31,90 @@ bool Triangle::tri_intersect(const Ray &r, real_type &t, real_type &u, real_type
 }
 
 bool Triangle::intersect_p(const Ray &r, real_type maxT) const{
-	real_type t, u, v;
-	auto flag = tri_intersect(r, t, u, v);
-	if(!flag || t > maxT) return false;
-	else return true;
+	constexpr float epsilon = std::numeric_limits<float>::epsilon();
+
+    // This is how we retrieve the information associated with this particular triangle.
+    const Point3f &p0 = *vert[0]; // Get the 3D coordinate of the 0-vertex of this triangle.
+    const Point3f &p1 = *vert[1]; // Same for the 1-vertex.
+    const Point3f &p2 = *vert[2]; // Same for the 2-vertex.
+
+    Vector3f edge1 = p1 - p0;
+    Vector3f edge2 = p2 - p0;
+    Vector3f ray_cross_e2 = glm::cross(r.d, edge2);
+    float det = glm::dot(edge1, ray_cross_e2);
+
+    if (det > -epsilon && det < epsilon)
+        return false;    // This ray is parallel to this triangle.
+
+    float inv_det = 1.0 / det;
+    Vector3f s = r.o - p0;
+    float u = inv_det * dot(s, ray_cross_e2);
+
+    if (u < 0 || u > 1)
+        return false;
+
+    Vector3f s_cross_e1 = glm::cross(s, edge1);
+    float v = inv_det * glm::dot(r.d, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return false;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * dot(edge2, s_cross_e1);
+
+    if (t > epsilon && t < r.t_max) // ray intersection
+    {
+        return true;
+    }
+    else // This means that there is a line intersection but not a ray intersection.
+        return false;
+
+    return false;
 }
 
 bool Triangle::intersect(const Ray &r, shared_ptr<Surfel> &isect) const{
-	real_type t, u, v;
-	if(!tri_intersect(r, t, u, v)) return false;
+	// This is how we retrieve the information associated with this particular triangle.
+    const Point3f &p0 = *vert[0]; // Get the 3D coordinate of the 0-vertex of this triangle.
+    const Point3f &p1 = *vert[1]; // Same for the 1-vertex.
+    const Point3f &p2 = *vert[2]; // Same for the 2-vertex.
+    
+    const Normal3f &n0 = *n[0]; // Retrieve the normal at vertex 0.
+    const Normal3f &n1 = *n[1]; // Retrieve the normal at vertex 1.
+    const Normal3f &n2 = *n[2]; // Retrieve the normal at vertex 2.
 
-	Point3f contact = ((*vert[1] * u) + (*vert[2] * v) + (*vert[0] * (1 - u - v)));
+    constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
-	Normal3f finalNormal = (*n[1] * u) + (*n[2] * v) + (*n[0] * (1 - u - v));
-	finalNormal = glm::normalize(finalNormal);
+    Vector3f edge1 = p1 - p0;
+    Vector3f edge2 = p2 - p0;
+    Vector3f ray_cross_e2 = glm::cross(r.d, edge2);
+    float det = glm::dot(edge1, ray_cross_e2);
 
-	if(mesh->backface_cull && glm::dot(finalNormal, r.d) > 0) return false;
+    if (det > -epsilon && det < epsilon)
+        return false;    // This ray is parallel to this triangle.
 
+    float inv_det = 1.0 / det;
+    Vector3f s = r.o - p0;
+    float u = inv_det * dot(s, ray_cross_e2);
 
-	isect = unique_ptr<Surfel>(new Surfel(contact, finalNormal, -r.d, t));	
-	return true;
+    if (u < 0 || u > 1)
+        return false;
+
+    Vector3f s_cross_e1 = glm::cross(s, edge1);
+    float v = inv_det * glm::dot(r.d, s_cross_e1);
+
+    if (v < 0 || u + v > 1)
+        return false;
+
+    // At this stage we can compute t to find out where the intersection point is on the line.
+    float t = inv_det * dot(edge2, s_cross_e1);
+
+    if (t > epsilon && t < r.t_max) // ray intersection
+    {
+        isect = unique_ptr<Surfel>(new Surfel(r(t), rt3::Lerp(v,rt3::Lerp(u, n0, n1),n2), glm::normalize(-r.d), t));
+        return true;
+    }
+    // This means that there is a line intersection but not a ray intersection.
+    return false;
 }
 
 Bounds3f Triangle::computeBounds() const {
