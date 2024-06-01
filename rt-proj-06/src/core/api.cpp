@@ -121,7 +121,7 @@ Shape * API::make_shape(const ParamSet &ps) {
 GeometricPrimitive * API::make_geometric_primitive(unique_ptr<Shape> &&shape, 
                                                    shared_ptr<Material> material) {
 
-    std::cout << ">>> Inside API::make_geometric_primitive()\n";
+    //std::cout << ">>> Inside API::make_geometric_primitive()\n";
 
     return new GeometricPrimitive(
         material,

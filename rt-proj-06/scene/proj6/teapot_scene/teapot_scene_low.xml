@@ -8,13 +8,13 @@
     <filter type="gaussian" alpha="2" x_width="2" y_width="2" />
 
     <film type="image" x_res="900" y_res="450" filename="images/teapot_hires_P_low.png" img_type="png" gamma_corrected="no" />
-    <include filename="scene/proj6/teapot_scene/teapot_geometry.xml" />
+    <include filename="scene/proj6/teapot_scene/teapot_geometry_low.xml" />
 
     <!-- <lookat look_from="0 0 30" look_at="0 0 0" up="0 1 0" />
     <camera type="orthographic" screen_window="-40 40 -20 20" />
     <integrator type="blinn_phong" depth="2" />
 
-    <film type="image" x_res="900" y_res="450" filename="images/teapot_hires_O.png" img_type="png" gamma_corrected="no" />
-    <include filename="scene/proj_06_triangle/teapot_scene/teapot_geometry.xml" /> -->
+    <film type="image" x_res="900" y_res="450" filename="images/teapot_hires_O_low.png" img_type="png" gamma_corrected="no" />
+    <include filename="scene/proj6/teapot_scene/teapot_geometry_low.xml" /> -->
 
 </RT3>

@@ -307,6 +307,9 @@ void parse_parameters(tinyxml2::XMLElement* p_element,
     case param_type_e::ARR_POINT3F:
       parse_array_COMPOSITE_attrib<real_type, Point3f>(p_element, ps_out, name);
       break;
+    case param_type_e::ARR_POINT2F:
+      parse_array_COMPOSITE_attrib<real_type, Point2f>(p_element, ps_out, name);
+      break;
     /* case param_type_e::ARR_COLOR:
       parse_array_COMPOSITE_attrib<uint8_t, Color>(p_element, ps_out, name);
       break; */
@@ -467,7 +470,7 @@ bool parse_array_COMPOSITE_attrib(tinyxml2::XMLElement* p_element,
     // 2, 2, 2, 4, 4, 4, 8, 8, 8} and COMPOSITE = Vector3f, we must extract 4
     // Vector3f: Vector3f{1,1,1}, {2,2,2}, ..., {8,8,8}.
     for (auto i{ 0U }; i < n_basic / COMPOSITE_SIZE; i++) {
-      std::cout << "COMPOSITE_SIZE = " << COMPOSITE_SIZE << '\n';
+      //std::cout << "COMPOSITE_SIZE = " << COMPOSITE_SIZE << '\n';
       // Call the proper constructor, as in Vector3f{x,y,z} or Vector2f{x,y}.
       // If, say, COMPOSITE = Vector3f, this will call the constructor
       // Vector3f{x,y,z}.
