@@ -12,6 +12,7 @@
 #include "../lights/point.h"
 #include "../lights/spot.h"
 #include "../lights/directional.h"
+#include "../shapes/triangle.h"
 
 namespace rt3 {
 
@@ -21,6 +22,7 @@ API::APIState API::curr_state = APIState::Uninitialized;
 RunningOptions API::curr_run_opt;
 std::unique_ptr<RenderOptions> API::render_opt;
 vector<std::pair<ParamSet, shared_ptr<Material>>> API::global_primitives;
+vector<std::pair<std::shared_ptr<TriangleMesh>, shared_ptr<Material>>> API::global_mesh_primitives;
 shared_ptr<Material> API::curr_material;
 std::map<string, shared_ptr<Material>> API::named_materials;
 vector<ParamSet> API::lights;
@@ -148,6 +150,14 @@ Light * API::make_light( const ParamSet &ps_light, Bounds3f world_box) {
     return light;
 }
 
+vector<Shape*> API::make_triangles(shared_ptr<TriangleMesh> tm) {
+  std::cout << ">>> Inside API::make_triangles()\n";
+  
+  vector<Shape*> shapes = create_triangles(tm) ; 
+  
+  return shapes;
+}
+
 // ˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆˆ
 // END OF THE AUXILIARY FUNCTIONS
 // =========================================================================
@@ -215,6 +225,17 @@ void API::world_end() {
     world_box = Bounds3f::insert(world_box, shape->computeBounds());
 
     primitives.push_back(shared_ptr<PrimitiveBounds>(make_geometric_primitive(std::move(shape), mat)));
+  }
+
+  for(auto [mesh_ps, mat] : global_mesh_primitives) {
+    shared_ptr<TriangleMesh> mesh_copy = mesh_ps->copy_mesh();
+
+    vector<Shape*> shapes = make_triangles(mesh_copy);
+    for(Shape* shape : shapes) {
+      world_box = Bounds3f::insert(world_box, shape->computeBounds());
+
+      primitives.push_back(shared_ptr<PrimitiveBounds>(make_geometric_primitive(std::move(unique_ptr<Shape>(shape)), mat)));
+    }
   }
 
   unique_ptr<PrimList> prim_list = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
@@ -357,11 +378,39 @@ void API::integrator(const ParamSet &ps) {
   render_opt->integrator_ps = ps;
 }
 
-void API::object( const ParamSet &ps ) {
+void API::object(const ParamSet &ps) {
   std::cout << ">>> Inside API::object()\n";
   VERIFY_WORLD_BLOCK("API::object");
 
-  global_primitives.push_back({ps, curr_material});
+  std::string type = retrieve(ps, "type", string{"trianglemesh"});
+
+  if(type == "trianglemesh") {
+    if(ps.count("filename")) {
+      string filename = retrieve(ps, "filename", string());
+
+      shared_ptr<TriangleMesh> tm{new TriangleMesh()};
+
+      bool status = load_mesh_data(
+        retrieve(ps, "filename", string{}), 
+        retrieve(ps, "reverse_vertex_order", false), 
+        retrieve(ps, "compute_normals", false),
+        retrieve(ps, "flip_normals", false), 
+        tm
+      );      
+
+      if(status){
+        tm->backface_cull = retrieve(ps, "backface_cull", false);
+      }else{
+        RT3_ERROR("Couldn't load obj file");
+      }
+
+      global_mesh_primitives.push_back({tm, curr_material});
+    } else {
+      global_mesh_primitives.push_back({shared_ptr<TriangleMesh>(create_triangle_mesh(ps)), curr_material});
+    }
+  }else{
+    global_primitives.push_back({ps, curr_material});
+  }  
 }
 
 void API::light(const ParamSet &ps) {

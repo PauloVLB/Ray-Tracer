@@ -27,7 +27,7 @@
 #include "integrator.h"
 #include "scene.h"
 #include "light.h"
-
+#include "../shapes/triangle_mesh.h"
 
 //=== API Macro definitions
 
@@ -100,6 +100,7 @@ public:
   /// Stores the running options collect in main().
   static RunningOptions curr_run_opt;
   static vector<std::pair<ParamSet, shared_ptr<Material>>> global_primitives;
+  static vector<std::pair<std::shared_ptr<TriangleMesh>, shared_ptr<Material>>> global_mesh_primitives;
   static shared_ptr<Material> curr_material;
   static std::map<string, shared_ptr<Material>> named_materials;
   static vector<ParamSet> lights;
@@ -132,6 +133,7 @@ private:
   static Shape *make_shape(const ParamSet &ps);
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
   static Light * make_light( const ParamSet &ps_light, Bounds3f worldBox);
+  static vector<Shape*> make_triangles(shared_ptr<TriangleMesh> tm);
 public:
   //=== API function begins here.
   static void init_engine(const RunningOptions &);
