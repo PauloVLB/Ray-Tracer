@@ -45,4 +45,20 @@ Bounds3f Bounds3f::insert(const Bounds3f &a, const Bounds3f &b){
     return x;
 }
 
+Bounds3f Bounds3f::createBox(const vector<Point3f> &p){
+	Point3f minPoint(p.front());
+	Point3f maxPoint(p.front());
+
+	Point3f epsPoint = Point3f({0.0001, 0.0001, 0.0001});
+
+	for(int i = 1; i < (int) p.size(); ++i){
+		for(int j = 0; j < 3; ++j){
+			minPoint[j] = std::min(minPoint[j], p[i][j]);
+			maxPoint[j] = std::max(maxPoint[j], p[i][j]);
+		}
+	}
+
+	return Bounds3f(minPoint - epsPoint, maxPoint + epsPoint);
+}
+
 }

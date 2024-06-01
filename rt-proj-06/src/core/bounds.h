@@ -23,6 +23,7 @@ public:
     bool intersect_p(const Ray &ray, real_type maxT) const;
 
     static Bounds3f insert(const Bounds3f &a, const Bounds3f &b);
+    static Bounds3f createBox(const vector<Point3f> &p);
 };
 
 }
