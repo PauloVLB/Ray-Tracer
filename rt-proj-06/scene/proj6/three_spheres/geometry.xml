@@ -10,10 +10,10 @@
         <light_source type="directional" L="0.6 0.6 0.4" scale="1 1 1" from="1 0.2 -4" to="-1 0 3" />
 
         <!-- Material Library -->
-        <include filename="../scenes/projects_references/proj_06_triangle/three_spheres/materials.xml" />
+        <include filename="scene/proj6/three_spheres/materials.xml" />
 
         <!-- Objects -->
-        <include filename="../scenes/projects_references/proj_06_triangle/three_spheres/spheres.xml" />
+        <include filename="scene/proj6/three_spheres/spheres.xml" />
 
     <world_end/>
 </RT3>
