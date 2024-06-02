@@ -1,6 +1,6 @@
 <RT3>
     <!--- The Camera -->
-    <lookat look_from="0 160 250" look_at="0 60 0" up="0 1 0" />
+    <lookat look_from="0 160 290" look_at="0 60 0" up="0 1 0" />
     <camera type="perspective" fovy="25" />
     <integrator type="blinn_phong" depth="2" />
     <!-- <integrator type="normal_map"/> -->

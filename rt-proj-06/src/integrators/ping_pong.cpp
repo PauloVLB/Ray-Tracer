@@ -27,7 +27,7 @@ std::optional<Color> PingPongIntegrator::Li(const Ray& ray, const unique_ptr<Sce
     if (!scene->intersect(ray, isect)) {
         return {};
     } else {
-        if(glm::dot(isect->wo, isect->n) < 0) return {};
+        if(glm::dot(isect->wo, isect->n) < 0) return Color{0.0, 0.0, 0.0};
 
         shared_ptr<PingPongMaterial> material = std::dynamic_pointer_cast<PingPongMaterial>(isect->primitive->get_material());
         
