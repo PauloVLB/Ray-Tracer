@@ -62,7 +62,7 @@ bool Triangle::intersect_p(const Ray &r, real_type maxT) const{
     // At this stage we can compute t to find out where the intersection point is on the line.
     float t = inv_det * dot(edge2, s_cross_e1);
 
-    if (t > epsilon && t < r.t_max) // ray intersection
+    if (t > epsilon && t < maxT) // ray intersection
     {
         return true;
     }

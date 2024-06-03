@@ -10,7 +10,10 @@ void SamplerIntegrator::render( const unique_ptr<Scene> &scene ) {
     const int max_chars = 100;
     const int max_it = h*w;
     const int step = max_it/max_chars;
+    const int step_cycle = 100;
     const char simbol = '.';
+    const char cycle[4] = {'\\', '|', '/', '-'};
+    int it_bar = 0;
     int curr_it = 0;
     
     for(int i = 0; i < h; i++) {
@@ -25,9 +28,9 @@ void SamplerIntegrator::render( const unique_ptr<Scene> &scene ) {
             camera->film->add_sample( Point2i( i, j ), L ); // Set color of pixel (x,y) to L.
             
             // Loading bar
-            if(curr_it % step == 0) {
+            if(curr_it % step == 0 || curr_it % step_cycle == 0) {
                 int curr_chars = (curr_it*max_chars)/max_it;
-                std::cout << "\t" << (curr_it*100/max_it) << "% [";
+                std::cout << "\t " << cycle[it_bar] << " " << (curr_it*100/max_it) << "% [";
                 for(int k = 0; k < max_chars; k++) {
                     if(k < curr_chars) {
                         std::cout << simbol;
@@ -37,6 +40,7 @@ void SamplerIntegrator::render( const unique_ptr<Scene> &scene ) {
                 }
                 std::cout << "]\r";
                 std::cout.flush();
+                it_bar = (it_bar + 1)%4;
             }
             curr_it++;
         }
