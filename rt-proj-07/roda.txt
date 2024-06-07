@@ -1,0 +1,1 @@
+g++ -std=c++17 -o build_src src/core/*.cpp src/integrators/*.cpp src/shapes/*.cpp src/main/*.cpp src/materials/*.cpp src/cameras/*.cpp src/ext/*.cpp src/lights/*.cpp
