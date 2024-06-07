@@ -14,11 +14,11 @@ public:
 
     bool hit(const Ray r, float tmin, float tmax) const {
         for (int a = 0; a < 3; a++) { // Why 3 ?
-            float t0 = ffmin((min[a] - r.origin[a]) / r.direction[a], (max[a] - r.origin[a] / r.direction[a]));
-            float t1 = ffmax((min[a] - r.origin[a]) / r.direction[a], (max[a] - r.origin[a] / r.direction[a]));
+            float t0 = std::min((min[a] - r.origin[a]) / r.direction[a], (max[a] - r.origin[a] / r.direction[a]));
+            float t1 = std::max((min[a] - r.origin[a]) / r.direction[a], (max[a] - r.origin[a] / r.direction[a]));
 
-            tmin = ffmax(t0, tmin);
-            tmax = ffmin(t1, tmax);
+            tmin = std::max(t0, tmin);
+            tmax = std::min(t1, tmax);
             if (tmax <= tmin) {
                 return false;
             }
