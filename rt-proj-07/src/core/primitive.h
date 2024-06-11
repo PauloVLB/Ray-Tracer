@@ -71,15 +71,17 @@ public:
 
 class BVHAccel : public AggregatePrimitive {
 public:
-	PrimList(vector<std::shared_ptr<PrimitiveBounds>> &&prim) : AggregatePrimitive(std::move(prim)){}
+    BVHAccel(vector<std::shared_ptr<PrimitiveBounds>> &&prim) : AggregatePrimitive(std::move(prim)) {}
 
-	~PrimList(){};
+    ~BVHAccel() {}
 
-	bool intersect_p( const Ray& r, real_type maxT ) const override;
+    bool intersect_p(const Ray& r, real_type maxT) const override;
 
-	bool intersect( const Ray& r, std::shared_ptr<Surfel> &isect ) const override;
-	std::shared_ptr<BVHAccel> build(vector<std::shared_ptr<PrimitiveBounds>> &&prim){}
-}
+    bool intersect(const Ray& r, std::shared_ptr<Surfel>& isect) const override;
+
+    std::shared_ptr<BVHAccel> build(vector<std::shared_ptr<PrimitiveBounds>> &&prim);
+};
+
 
 } // namespace rt3
 
