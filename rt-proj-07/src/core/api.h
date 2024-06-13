@@ -79,6 +79,9 @@ struct RenderOptions {
 
   /// the Integrator
   ParamSet integrator_ps;
+
+  /// the Accelerator
+  ParamSet accelerator_ps;
 };
 
 /// Collection of data related to a Graphics state, such as current material,
@@ -134,6 +137,7 @@ private:
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
   static Light * make_light( const ParamSet &ps_light, Bounds3f worldBox);
   static vector<Shape*> make_triangles(shared_ptr<TriangleMesh> tm);
+  static shared_ptr<Primitive> make_primitive( const ParamSet& ps_accelerator, vector<shared_ptr<PrimitiveBounds>>&& primitives);
 public:
   //=== API function begins here.
   static void init_engine(const RunningOptions &);
@@ -153,6 +157,7 @@ public:
   static void integrator(const ParamSet &ps);
   static void object(const ParamSet &ps);
   static void light(const ParamSet &ps);
+  static void accelerator(const ParamSet &ps);
 };
 } // namespace rt3
 

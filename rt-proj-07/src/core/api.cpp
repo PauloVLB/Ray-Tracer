@@ -40,6 +40,23 @@ Film* API::make_film(const std::string& name, const ParamSet& ps) {
   return film;
 }
 
+shared_ptr<Primitive> API::make_primitive( const ParamSet& ps_accelerator, vector<shared_ptr<PrimitiveBounds>>&& primitives) {
+
+    shared_ptr<Primitive> primitive = nullptr;
+
+    std::string type = retrieve(ps_accelerator, "type", std::string{"list"});
+
+    if(type == "list") {
+        primitive = shared_ptr<Primitive> (new PrimList(std::move(primitives)));
+    }else if(type == "bvh") {
+        primitive = BVHAccel::build(std::move(primitives));
+    }else {
+        RT3_ERROR("Unknown accerelator type.");
+    }
+
+    return primitive;
+}
+
 Background* API::make_background(const std::string& name, const ParamSet& ps) {
   std::cout << ">>> Inside API::make_background()\n";
   Background* bkg{ nullptr };
@@ -238,14 +255,15 @@ void API::world_end() {
     }
   }
 
-  unique_ptr<PrimList> prim_list = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
-
+  //unique_ptr<PrimList> primitive = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
+  shared_ptr<Primitive> primitive = make_primitive(render_opt->accelerator_ps, std::move(primitives));
+  
   vector<shared_ptr<Light>> the_lights;
   for (auto light_ps : lights) {
     the_lights.push_back(shared_ptr<Light>(make_light(light_ps, world_box)));
   }  
   
-  the_scene = make_unique<Scene>(std::move(prim_list), std::move(the_background), std::move(the_lights));
+  the_scene = make_unique<Scene>(std::move(primitive), std::move(the_background), std::move(the_lights));
   // MADE THE SCENE
 
   // MAKE THE INTEGRATOR -----------------------------------------------------------------------------------
@@ -376,6 +394,13 @@ void API::integrator(const ParamSet &ps) {
   VERIFY_SETUP_BLOCK("API::integrator");
 
   render_opt->integrator_ps = ps;
+}
+
+void API::accelerator(const ParamSet &ps) {
+  std::cout << ">>> Inside API::accelerator()\n";
+  VERIFY_SETUP_BLOCK("API::accelerator");
+
+  render_opt->accelerator_ps = ps;
 }
 
 void API::object(const ParamSet &ps) {
