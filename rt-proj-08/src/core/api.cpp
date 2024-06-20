@@ -445,4 +445,19 @@ void API::light(const ParamSet &ps) {
   lights.push_back(ps);
 }
 
+void API::instantiate_obj(const ParamSet &ps) {}
+void API::start_obj_instance(const ParamSet &ps) {}
+void API::finish_obj_instance() {}
+void API::push_GS() {}
+void API::pop_GS() {}
+void API::push_CTM() {}
+void API::pop_CTM() {}
+void API::identity() {}
+void API::translate(const ParamSet &ps) {}
+void API::scale(const ParamSet &ps) {}      
+void API::rotate(const ParamSet &ps) {}      
+void API::save_coord_system(const ParamSet &ps) {}
+void API::restore_coord_system(const ParamSet &ps) {}
+
+
 }  // namespace rt3

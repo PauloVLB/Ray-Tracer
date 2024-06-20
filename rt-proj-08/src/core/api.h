@@ -158,6 +158,19 @@ public:
   static void object(const ParamSet &ps);
   static void light(const ParamSet &ps);
   static void accelerator(const ParamSet &ps);
+  static void instantiate_obj(const ParamSet &ps);
+  static void start_obj_instance(const ParamSet &ps);
+  static void finish_obj_instance();
+  static void push_GS();
+  static void pop_GS();
+  static void push_CTM();
+  static void pop_CTM();
+  static void identity();
+  static void translate(const ParamSet &ps);
+  static void scale(const ParamSet &ps);      
+  static void rotate(const ParamSet &ps);      
+  static void save_coord_system(const ParamSet &ps);
+  static void restore_coord_system(const ParamSet &ps);   
 };
 } // namespace rt3
 

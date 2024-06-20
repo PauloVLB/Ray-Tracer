@@ -228,6 +228,87 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
       parse_parameters(p_element, param_list, &ps);
 
       API::accelerator(ps);
+    } else if (tag_name == "object_instance_call") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::STRING, "name"}
+      };
+      parse_parameters(p_element, param_list, &ps);
+
+      API::instantiate_obj(ps);
+    } else if (tag_name == "object_instance_begin") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::STRING, "name"}
+      };
+      parse_parameters(p_element, param_list, &ps);
+
+      API::start_obj_instance(ps);
+    } else if (tag_name == "object_instance_end") {
+      API::finish_obj_instance();
+    } else if (tag_name == "push_gs") {
+      API::push_GS();
+    } else if (tag_name == "pop_gs") {
+      API::pop_GS();
+    } else if (tag_name == "push_ctm") {
+      API::push_CTM();
+    } else if (tag_name == "pop_ctm") {
+      API::pop_CTM();
+    } else if (tag_name == "identity") {
+      API::identity();
+    } else if (tag_name == "translate") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::VEC3F, "value"}
+      };
+
+      parse_parameters(p_element, param_list, &ps);
+
+      API::translate(ps);
+    } else if (tag_name == "scale") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::POINT3F, "value"}
+      };
+
+      parse_parameters(p_element, param_list, &ps);
+
+      API::scale(ps);      
+    } else if (tag_name == "rotate") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::VEC3F, "axis"},
+          {param_type_e::REAL, "angle"}
+      };
+
+      parse_parameters(p_element, param_list, &ps);
+
+      API::rotate(ps);      
+    } else if (tag_name == "save_coord_system") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::STRING, "name"}
+      };
+
+      parse_parameters(p_element, param_list, &ps);
+
+      API::save_coord_system(ps);       
+    } else if (tag_name == "restore_coord_system") {
+      ParamSet ps;
+
+      vector<std::pair<param_type_e, string>> param_list{
+          {param_type_e::STRING, "name"}
+      };
+
+      parse_parameters(p_element, param_list, &ps);
+
+      API::restore_coord_system(ps);         
     }
     // else RT3_WARNING( "Undefined tag `" + tag_name + "` found!" );
 
