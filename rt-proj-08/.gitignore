@@ -1,0 +1,8 @@
+trimesh/code/build
+images
+.DS_STORE
+build
+*.swp
+images/
+src/tags
+.vscode

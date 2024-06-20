@@ -17,6 +17,9 @@
         <named_material name="jade"/>
         <!-- <object type="trianglemesh" filename="scene/proj6/teapot_scene/16884_simple_padlock_v1.obj"/> -->
         <object type="trianglemesh" filename="scene/proj6/teapot_scene/liz.obj"/>
+        <named_material name="indigo"/>
+        <!-- <object type="trianglemesh" filename="scene/proj6/teapot_scene/16884_simple_padlock_v1.obj"/> -->
+        <object type="trianglemesh" filename="scene/proj6/teapot_scene/tree.obj"/>
 
         <!-- <named_material name="indigo"/>
         <object type="trianglemesh"
