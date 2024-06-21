@@ -87,7 +87,11 @@ struct RenderOptions {
 /// Collection of data related to a Graphics state, such as current material,
 /// lib of material, etc.
 struct GraphicsState {
-  // Not necessary in Project 01 through Project 07.
+	shared_ptr< Material > curr_material;  //!< Current material that globally affects all objects.
+	bool flip_normals{false};              //!< When true, we flip the normals
+	using DictOfMat = Dictionary< string, shared_ptr<Material> >;
+	shared_ptr< DictOfMat > mats_lib;      //!< Library of materials.
+	bool mats_lib_cloned{false};           //!< We only actually clone the library if a new material is added to it.
 };
 
 /// Static class that manages the render process
@@ -107,6 +111,18 @@ public:
   static shared_ptr<Material> curr_material;
   static std::map<string, shared_ptr<Material>> named_materials;
   static vector<ParamSet> lights;
+
+  static Transform curr_TM;
+  static Dictionary<std::string, Transform> named_coord_system;
+  static GraphicsState curr_GS;
+  static std::stack<GraphicsState> saved_GS; 
+  static std::stack<Transform> saved_TM;
+  static Dictionary<std::string, std::shared_ptr<const Transform>> transformation_cache;
+
+  // Static member functions
+  static std::shared_ptr<const Transform> get_transform(const std::string &name);
+  static void save_curr_state();
+  static void restore_prev_state();
 
 private:
   /// Current API state
