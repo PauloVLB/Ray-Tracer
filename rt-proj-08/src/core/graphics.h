@@ -9,7 +9,7 @@
 
 namespace rt3 {
 
-class GraphicsState {
+class Graphics_State {
 public:
     std::shared_ptr<Material> curr_material;  
     bool flip_normals{false};                 
@@ -17,8 +17,8 @@ public:
     std::shared_ptr<DictOfMat> mats_lib;      
     bool mats_lib_cloned{false};              
 
-    GraphicsState() = default;
-    ~GraphicsState() = default;
+    Graphics_State() = default;
+    ~Graphics_State() = default;
 };
 
 }
