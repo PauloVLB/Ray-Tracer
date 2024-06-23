@@ -25,10 +25,11 @@ public:
     Transform Rotate(float theta, const Vector3f &axis);
 
     //Idk if this really will be useful
-    bool HasScale() const; // defined in pbr-book
-    bool IsIdentity() const;
-    bool operator==(const Transform &t) const;
-    bool operator!=(const Transform &t) const;
+    // defined in pbr-book
+    // bool HasScale() const;
+    // bool IsIdentity() const;
+    // bool operator==(const Transform &t) const;
+    // bool operator!=(const Transform &t) const;
 
 private:
     Matrix4x4 m, mInv;
