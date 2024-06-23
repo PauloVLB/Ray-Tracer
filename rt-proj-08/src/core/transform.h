@@ -24,7 +24,7 @@ public:
     Transform RotateX(float theta);
     Transform Rotate(float theta, const Vector3f &axis);
 
-    //Idk if this really will be useful
+    //Idk if this really will be useful, but put it here, just in case...
     // defined in pbr-book
     // bool HasScale() const;
     // bool IsIdentity() const;
