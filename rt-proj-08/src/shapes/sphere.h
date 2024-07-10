@@ -2,6 +2,7 @@
 #define SPHERE_H
 
 #include "../core/shape.h"
+#include "../core/transform.h"
 
 namespace rt3 {
 
@@ -11,6 +12,9 @@ public:
     real_type radius;
  
     Sphere(Point3f cen, real_type r): center(cen), radius(r) {}
+    Sphere(Point3f cen, real_type r, shared_ptr<Transform> t): 
+        center(cen), radius(r), 
+        transform(t), inv_transform(make_shared<Transform>(transform->inverse())) {}
 
     ~Sphere(){}
 
@@ -20,11 +24,14 @@ public:
 
     bool intersect_p(const Ray &r, real_type maxT ) const override;
     bool intersect(const Ray &r, shared_ptr<Surfel> &isect) const override;
+
+    shared_ptr<Transform> transform, inv_transform;
 };
 
 
-Sphere *create_sphere(const ParamSet &ps);
+Sphere *create_sphere(const ParamSet &ps, shared_ptr<Transform> tr);
 
-}
+} // namespace rt3'
+
 
 #endif

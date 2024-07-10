@@ -50,7 +50,6 @@ shared_ptr<TriangleMesh> TriangleMesh::copy_mesh() const{
 
     for(auto &v : *vertices) new_verts->push_back(make_shared<Point3f>(*v));
     for(auto &n : *normals) new_normals->push_back(make_shared<Normal3f>(*n));
-
     return make_shared<TriangleMesh>(
         n_triangles,
         backface_cull,
@@ -59,6 +58,11 @@ shared_ptr<TriangleMesh> TriangleMesh::copy_mesh() const{
         new_verts,
         new_normals
     );  
+}
+
+void TriangleMesh::apply_transform(shared_ptr<Transform> t){
+  for(auto v : *vertices) *v = t->apply_v(*v);
+  for(auto n : *normals) *n = t->apply_n(*n);
 }
 
 }

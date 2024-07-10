@@ -61,4 +61,29 @@ Bounds3f Bounds3f::createBox(const vector<Point3f> &p){
 	return Bounds3f(minPoint - epsPoint, maxPoint + epsPoint);
 }
 
+vector<Point3f> Bounds3f::getPoints() const{
+  vector<Point3f> allPoints;
+  vector<Point3f> corners = {min_point, max_point};
+
+  for(int i = 0; i < 8; ++i){
+    Point3f currPoint = min_point;
+    for(int j = 0; j < 3; ++j){
+      bool isOn = (i & (1 << j));
+      currPoint[j] = corners[isOn][j];
+    }
+    allPoints.push_back(currPoint);
+  } 
+
+    // 000
+    // 001
+    // 010
+    // 011
+    // 100
+    // 101
+    // 110
+    // 111
+    
+  return allPoints;
+}
+
 }

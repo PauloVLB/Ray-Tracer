@@ -24,6 +24,8 @@ public:
 
     static Bounds3f insert(const Bounds3f &a, const Bounds3f &b);
     static Bounds3f createBox(const vector<Point3f> &p);
+
+    vector<Point3f> getPoints() const;
 };
 
 }

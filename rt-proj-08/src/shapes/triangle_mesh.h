@@ -2,6 +2,7 @@
 #define TRIANGLE_MESH_H
 
 #include "../core/rt3-base.h"
+#include "../core/transform.h"
 
 namespace rt3{
 
@@ -48,6 +49,8 @@ struct TriangleMesh {
     TriangleMesh& operator=( const TriangleMesh & ) = delete;
     /// Move constructor.
     TriangleMesh( TriangleMesh && other ) = delete;
+
+    void apply_transform(shared_ptr<Transform> t);
 };
 
 TriangleMesh *create_triangle_mesh(const ParamSet &ps);

@@ -1,43 +1,47 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "rt3.h"
-#include "ray.h"
-#include "vector3f.h"
-#include <memory>
+#include "bounds.h"
 
 namespace rt3{
 
 class Transform {
 public:
-    Transform();
-    Transform(const float m[4][4]);
-    Transform(const  Matrix4x4 &m);
-    Transform(const  Matrix4x4 &m, const Matrix4x4 &mInv);
-    ~Transform() = default;
+  Matrix4x4 m, mInv;
 
-    friend Transform Inverse(const Transform &t);
-    friend Transform Transpose(const Transform &t);
+  Transform():m(Matrix4x4(1.0)), mInv(m){}
 
-    Transform Translate(const Vector3f &delta) const;
-    Transform Scale(float x, float y, float z) const;
-    Transform RotateX(float theta);
-    Transform Rotate(float theta, const Vector3f &axis);
+  Transform(const Matrix4x4 &matrix) : m(matrix), mInv(glm::inverse(matrix)) { }
 
-    //Idk if this really will be useful, but put it here, just in case...
-    // defined in pbr-book
-    // bool HasScale() const;
-    // bool IsIdentity() const;
-    // bool operator==(const Transform &t) const;
-    // bool operator!=(const Transform &t) const;
+  Transform(const Matrix4x4 &m, const Matrix4x4 &mInv) 
+    : m(m), mInv(mInv) {}
 
-private:
-    Matrix4x4 m, mInv;
+  Transform inverse();
+  Transform transpose();
 
+  bool operator==(const Transform &t) const;
+  bool operator!=(const Transform &t) const;
+  bool IsIdentity() const;
+
+  const Matrix4x4 &GetMatrix() const;
+  const Matrix4x4 &GetInverseMatrix() const;
+
+  Point3f apply_p(const Point3f &p) const;
+  Vector3f apply_v(const Vector3f &v) const;
+  Normal3f apply_n(const Normal3f &n) const;
+
+  Ray apply_r(const Ray &r) const;
+  Bounds3f apply_b(const Bounds3f &b) const;  
+  
+  Transform update(const Transform &t2) const;
+
+  static Transform getTranslationMatrix(const Vector3f &v);
+  static Transform getRotationMatrix(const Vector3f v, const real_type degrees);
+  static Transform getScalingMatrix(const Point3f &p);
+  static Transform getIdentityMatrix();
 };
 
-} // namespace rt3
 
-
+}
 
 #endif

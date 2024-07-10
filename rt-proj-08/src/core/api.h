@@ -29,6 +29,8 @@
 #include "light.h"
 #include "../shapes/triangle_mesh.h"
 
+#include "transform.h"
+
 //=== API Macro definitions
 
 /// Check whether the current state has been intialized.
@@ -84,14 +86,11 @@ struct RenderOptions {
   ParamSet accelerator_ps;
 };
 
-/// Collection of data related to a Graphics state, such as current material,
-/// lib of material, etc.
-struct GraphicsState {
-	shared_ptr< Material > curr_material;  //!< Current material that globally affects all objects.
-	bool flip_normals{false};              //!< When true, we flip the normals
-	using DictOfMat = Dictionary< string, shared_ptr<Material> >;
-	shared_ptr< DictOfMat > mats_lib;      //!< Library of materials.
-	bool mats_lib_cloned{false};           //!< We only actually clone the library if a new material is added to it.
+struct ObjectBuild {
+  vector<tuple<ParamSet, shared_ptr<Material>, shared_ptr<Transform>>> primitives;
+  vector<tuple<shared_ptr<TriangleMesh>, shared_ptr<Material>, shared_ptr<Transform>>> mesh_primitives;
+
+  vector<ParamSet> lights;
 };
 
 /// Static class that manages the render process
@@ -106,18 +105,19 @@ public:
 
   /// Stores the running options collect in main().
   static RunningOptions curr_run_opt;
-  static vector<std::pair<ParamSet, shared_ptr<Material>>> global_primitives;
-  static vector<std::pair<std::shared_ptr<TriangleMesh>, shared_ptr<Material>>> global_mesh_primitives;
+  static vector<tuple<ParamSet, shared_ptr<Material>, shared_ptr<Transform>>> global_primitives;
+  static vector<tuple<shared_ptr<TriangleMesh>, shared_ptr<Material>, shared_ptr<Transform>>> global_mesh_primitives;
   static shared_ptr<Material> curr_material;
   static std::map<string, shared_ptr<Material>> named_materials;
+  static std::map<string, shared_ptr<TriangleMesh>> meshes;
   static vector<ParamSet> lights;
 
   static Transform curr_TM;
-  static Dictionary<std::string, Transform> named_coord_system;
-  static GraphicsState curr_GS;
-  static std::stack<GraphicsState> saved_GS; 
-  static std::stack<Transform> saved_TM;
-  static Dictionary<std::string, std::shared_ptr<const Transform>> transformation_cache;
+  static std::stack<shared_ptr<Transform>> saved_TM;
+
+  static string curr_obj;
+  static ObjectBuild obj_build;
+  static Dictionary<std::string, shared_ptr<ObjectBuild>> named_obj_build;
 
   // Static member functions
   static std::shared_ptr<const Transform> get_transform(const std::string &name);
@@ -149,7 +149,7 @@ private:
   static Camera *make_camera(const ParamSet &ps_camera, const ParamSet &ps_lookat, unique_ptr<Film> &&the_film);
   static Material *make_material( const ParamSet &ps_material);
   static Integrator *make_integrator(const ParamSet &ps_integrator, unique_ptr<Camera> &&camera);
-  static Shape *make_shape(const ParamSet &ps);
+  static Shape *make_shape(const ParamSet &ps, shared_ptr<Transform> tr);
   static GeometricPrimitive *make_geometric_primitive(unique_ptr<Shape> &&shape, shared_ptr<Material> material);
   static Light * make_light( const ParamSet &ps_light, Bounds3f worldBox);
   static vector<Shape*> make_triangles(shared_ptr<TriangleMesh> tm);

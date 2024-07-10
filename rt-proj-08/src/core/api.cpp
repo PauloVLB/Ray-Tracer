@@ -21,11 +21,18 @@ namespace rt3 {
 API::APIState API::curr_state = APIState::Uninitialized;
 RunningOptions API::curr_run_opt;
 std::unique_ptr<RenderOptions> API::render_opt;
-vector<std::pair<ParamSet, shared_ptr<Material>>> API::global_primitives;
-vector<std::pair<std::shared_ptr<TriangleMesh>, shared_ptr<Material>>> API::global_mesh_primitives;
+vector<tuple<ParamSet, shared_ptr<Material>, shared_ptr<Transform>>> API::global_primitives;
+vector<tuple<shared_ptr<TriangleMesh>, shared_ptr<Material>, shared_ptr<Transform>>> API::global_mesh_primitives;
 shared_ptr<Material> API::curr_material;
 std::map<string, shared_ptr<Material>> API::named_materials;
 vector<ParamSet> API::lights;
+ObjectBuild API::obj_build;
+std::map<string, shared_ptr<ObjectBuild>> API::named_obj_build;
+std::map<string, shared_ptr<TriangleMesh>> API::meshes;
+Transform API::curr_TM;
+std::stack<shared_ptr<Transform>> API::saved_TM;
+string API::curr_obj = "";
+
 // GraphicsState API::curr_GS;
 
 // THESE FUNCTIONS ARE NEEDED ONLY IN THIS SOURCE FILE (NO HEADER NECESSARY)
@@ -120,14 +127,14 @@ Integrator * API::make_integrator(const ParamSet &ps_integrator, unique_ptr<Came
   return integrator;
 }
 
-Shape * API::make_shape(const ParamSet &ps) {
+Shape * API::make_shape(const ParamSet &ps, shared_ptr<Transform> tr) {
   string type = retrieve(ps, "type", std::string{"sphere"});
   std::cout << ">>> Inside API::make_shape()\n";
 
   Shape *shape = nullptr;
 
   if(type == "sphere") {
-    shape = create_sphere(ps);
+    shape = create_sphere(ps, tr);
   } else {
     RT3_ERROR("Unknown object type.");
   }
@@ -139,7 +146,6 @@ GeometricPrimitive * API::make_geometric_primitive(unique_ptr<Shape> &&shape,
                                                    shared_ptr<Material> material) {
 
     //std::cout << ">>> Inside API::make_geometric_primitive()\n";
-
     return new GeometricPrimitive(
         material,
         std::move(shape)
@@ -170,8 +176,7 @@ Light * API::make_light( const ParamSet &ps_light, Bounds3f world_box) {
 vector<Shape*> API::make_triangles(shared_ptr<TriangleMesh> tm) {
   std::cout << ">>> Inside API::make_triangles()\n";
   
-  vector<Shape*> shapes = create_triangles(tm) ; 
-  
+  vector<Shape*> shapes = create_triangles(tm); 
   return shapes;
 }
 
@@ -236,17 +241,17 @@ void API::world_end() {
 
   Bounds3f world_box;
 
-  for(auto [obj_ps, mat] : global_primitives) {
-    unique_ptr<Shape> shape(make_shape(obj_ps));
+  for(auto [obj_ps, mat, tr] : global_primitives) {
+    unique_ptr<Shape> shape(make_shape(obj_ps, tr));
 
     world_box = Bounds3f::insert(world_box, shape->computeBounds());
 
     primitives.push_back(shared_ptr<PrimitiveBounds>(make_geometric_primitive(std::move(shape), mat)));
   }
-
-  for(auto [mesh_ps, mat] : global_mesh_primitives) {
+  for(auto [mesh_ps, mat, tr] : global_mesh_primitives) {
     shared_ptr<TriangleMesh> mesh_copy = mesh_ps->copy_mesh();
-
+    
+    mesh_copy->apply_transform(tr);
     vector<Shape*> shapes = make_triangles(mesh_copy);
     for(Shape* shape : shapes) {
       world_box = Bounds3f::insert(world_box, shape->computeBounds());
@@ -254,6 +259,7 @@ void API::world_end() {
       primitives.push_back(shared_ptr<PrimitiveBounds>(make_geometric_primitive(std::move(unique_ptr<Shape>(shape)), mat)));
     }
   }
+
 
   //unique_ptr<PrimList> primitive = unique_ptr<PrimList>(new PrimList(std::move(primitives)));
   shared_ptr<Primitive> primitive = make_primitive(render_opt->accelerator_ps, std::move(primitives));
@@ -413,28 +419,49 @@ void API::object(const ParamSet &ps) {
     if(ps.count("filename")) {
       string filename = retrieve(ps, "filename", string());
 
-      shared_ptr<TriangleMesh> tm{new TriangleMesh()};
+      if(meshes.count(filename) == 0) {
+        shared_ptr<TriangleMesh> tm{new TriangleMesh()};
 
-      bool status = load_mesh_data(
-        retrieve(ps, "filename", string{}), 
-        retrieve(ps, "reverse_vertex_order", false), 
-        retrieve(ps, "compute_normals", false),
-        retrieve(ps, "flip_normals", false), 
-        tm
-      );      
+        bool status = load_mesh_data(
+          retrieve(ps, "filename", string{}), 
+          retrieve(ps, "reverse_vertex_order", false), 
+          retrieve(ps, "compute_normals", false),
+          retrieve(ps, "flip_normals", false), 
+          tm
+        );      
 
-      if(status){
-        tm->backface_cull = retrieve(ps, "backface_cull", false);
-      }else{
-        RT3_ERROR("Couldn't load obj file");
+        if(status){
+          tm->backface_cull = retrieve(ps, "backface_cull", false);
+        }else{
+          RT3_ERROR("Couldn't load obj file");
+        }
+
+        meshes[filename] = tm;
       }
 
-      global_mesh_primitives.push_back({tm, curr_material});
+      if(curr_obj == "") {
+        global_mesh_primitives.push_back({meshes[filename], curr_material, make_shared<Transform>(curr_TM)});
+      } else {
+        named_obj_build[curr_obj]->mesh_primitives.push_back({meshes[filename], curr_material, make_shared<Transform>(curr_TM)});
+      }
     } else {
-      global_mesh_primitives.push_back({shared_ptr<TriangleMesh>(create_triangle_mesh(ps)), curr_material});
+      if(curr_obj == "") {
+        global_mesh_primitives.push_back(
+          {shared_ptr<TriangleMesh>(create_triangle_mesh(ps)), curr_material, make_shared<Transform>(curr_TM)});
+      } else {
+        named_obj_build[curr_obj]->mesh_primitives.push_back(
+          {shared_ptr<TriangleMesh>(create_triangle_mesh(ps)), curr_material, make_shared<Transform>(curr_TM)});
+      }  
     }
   }else{
-    global_primitives.push_back({ps, curr_material});
+    global_primitives.push_back({ps, curr_material, make_shared<Transform>(curr_TM)});
+    if(curr_obj == "") {
+      global_primitives.push_back(
+        {ps, curr_material, make_shared<Transform>(curr_TM)});
+    } else {
+      named_obj_build[curr_obj]->primitives.push_back(
+        {ps, curr_material, make_shared<Transform>(curr_TM)});
+    }
   }  
 }
 
@@ -445,17 +472,82 @@ void API::light(const ParamSet &ps) {
   lights.push_back(ps);
 }
 
-void API::instantiate_obj(const ParamSet &ps) {}
-void API::start_obj_instance(const ParamSet &ps) {}
-void API::finish_obj_instance() {}
+void API::instantiate_obj(const ParamSet &ps) {
+  std::cout << ">>> Inside API::instantiate_obj()\n";
+  VERIFY_WORLD_BLOCK("API::instantiate_obj");
+
+  string obj_name = retrieve(ps, "name", string{});
+
+  for(auto [ps, mat, tr] : named_obj_build[obj_name]->primitives) {
+    global_primitives.push_back({ps, mat, tr}); 
+  }
+
+  for(auto [mesh, mat, tr] : named_obj_build[obj_name]->mesh_primitives) {
+    global_mesh_primitives.push_back({mesh, mat, tr}); 
+  }
+
+  for(auto ps : named_obj_build[obj_name]->lights) {
+    lights.push_back(ps);
+  }
+}
+void API::start_obj_instance(const ParamSet &ps) {
+  std::cout << ">>> Inside API::start_obj_instance()\n";
+  VERIFY_WORLD_BLOCK("API::start_obj_instance");
+
+  string obj_name = retrieve(ps, "name", string{});
+  curr_obj = obj_name;
+  named_obj_build[obj_name] = std::make_shared<ObjectBuild>(ObjectBuild());
+}
+void API::finish_obj_instance() { 
+  std::cout << ">>> Inside API::finish_obj_instance()\n";
+  VERIFY_WORLD_BLOCK("API::finish_obj_instance");
+
+  curr_obj = "";
+} 
 void API::push_GS() {}
 void API::pop_GS() {}
-void API::push_CTM() {}
-void API::pop_CTM() {}
-void API::identity() {}
-void API::translate(const ParamSet &ps) {}
-void API::scale(const ParamSet &ps) {}      
-void API::rotate(const ParamSet &ps) {}      
+void API::push_CTM() {
+  std::cout << ">>> Inside API::push_CTM()\n";
+  VERIFY_WORLD_BLOCK("API::push_CTM");
+
+  saved_TM.push(std::make_shared<Transform>(curr_TM));
+}
+void API::pop_CTM() {
+  std::cout << ">>> Inside API::pop_CTM()\n";
+  VERIFY_WORLD_BLOCK("API::pop_CTM");
+
+  saved_TM.pop();
+}
+void API::identity() {
+  std::cout << ">>> Inside API::identity()\n";
+  VERIFY_WORLD_BLOCK("API::identity");
+
+  curr_TM = Transform();
+}
+void API::translate(const ParamSet &ps) {
+  std::cout << ">>> Inside API::translate()\n";
+  VERIFY_WORLD_BLOCK("API::translate");
+
+  Vector3f v = retrieve(ps, "value", Vector3f{0, 0, 0});
+
+  auto translate_matrix = Transform::getTranslationMatrix(v);
+  curr_TM = curr_TM.update(translate_matrix);
+}
+void API::scale(const ParamSet &ps) {
+  std::cout << ">>> Inside API::scale()\n";
+  VERIFY_WORLD_BLOCK("API::scale");
+
+  Point3f p = retrieve(ps, "value", Point3f{1, 1, 1});
+  curr_TM = curr_TM.update(Transform::getScalingMatrix(p));
+}      
+void API::rotate(const ParamSet &ps) {
+  std::cout << ">>> Inside API::rotate()\n";
+  VERIFY_WORLD_BLOCK("API::rotate");
+
+  Vector3f v = retrieve(ps, "axis", Vector3f{0, 0, 0});
+  real_type degrees = retrieve(ps, "angle", real_type{0});
+  curr_TM = curr_TM.update(Transform::getRotationMatrix(v, degrees));
+}      
 void API::save_coord_system(const ParamSet &ps) {}
 void API::restore_coord_system(const ParamSet &ps) {}
 

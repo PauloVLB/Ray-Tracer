@@ -63,6 +63,8 @@ using Point3i = glm::ivec3;
 using Point2i = glm::ivec2;
 using Point2f = glm::vec2;
 
+using Matrix4x4 = glm::mat4x4;
+
 const real_type ERR = 1;
 
 template <typename T, size_t S>

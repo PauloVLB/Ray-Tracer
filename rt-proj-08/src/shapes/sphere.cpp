@@ -78,10 +78,11 @@ namespace rt3 {
         return Bounds3f{center - radiusPoint, center + radiusPoint};
     }
 
-    Sphere *create_sphere(const ParamSet &ps) {
+    Sphere *create_sphere(const ParamSet &ps, shared_ptr<Transform> tr) {
         return new Sphere(
             retrieve(ps, "center", Point3f()),
-            retrieve(ps, "radius", real_type(1))
+            retrieve(ps, "radius", real_type(1)),
+            tr
         );
     }
 }
