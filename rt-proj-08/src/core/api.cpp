@@ -479,11 +479,11 @@ void API::instantiate_obj(const ParamSet &ps) {
   string obj_name = retrieve(ps, "name", string{});
 
   for(auto [ps, mat, tr] : named_obj_build[obj_name]->primitives) {
-    global_primitives.push_back({ps, mat, tr}); 
+    global_primitives.push_back({ps, mat, make_shared<Transform>(curr_TM.update(*tr))}); 
   }
 
   for(auto [mesh, mat, tr] : named_obj_build[obj_name]->mesh_primitives) {
-    global_mesh_primitives.push_back({mesh, mat, tr}); 
+    global_mesh_primitives.push_back({mesh, mat, make_shared<Transform>(curr_TM.update(*tr))}); 
   }
 
   for(auto ps : named_obj_build[obj_name]->lights) {
@@ -497,12 +497,15 @@ void API::start_obj_instance(const ParamSet &ps) {
   string obj_name = retrieve(ps, "name", string{});
   curr_obj = obj_name;
   named_obj_build[obj_name] = std::make_shared<ObjectBuild>(ObjectBuild());
+
+  saved_TM.push(std::make_shared<Transform>(curr_TM));
 }
 void API::finish_obj_instance() { 
   std::cout << ">>> Inside API::finish_obj_instance()\n";
   VERIFY_WORLD_BLOCK("API::finish_obj_instance");
 
   curr_obj = "";
+  curr_TM = *saved_TM.top();
 } 
 void API::push_GS() {}
 void API::pop_GS() {}
@@ -516,6 +519,7 @@ void API::pop_CTM() {
   std::cout << ">>> Inside API::pop_CTM()\n";
   VERIFY_WORLD_BLOCK("API::pop_CTM");
 
+  curr_TM = *saved_TM.top();
   saved_TM.pop();
 }
 void API::identity() {
@@ -531,7 +535,14 @@ void API::translate(const ParamSet &ps) {
   Vector3f v = retrieve(ps, "value", Vector3f{0, 0, 0});
 
   auto translate_matrix = Transform::getTranslationMatrix(v);
+
   curr_TM = curr_TM.update(translate_matrix);
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
 }
 void API::scale(const ParamSet &ps) {
   std::cout << ">>> Inside API::scale()\n";

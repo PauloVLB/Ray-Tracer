@@ -61,7 +61,7 @@ shared_ptr<TriangleMesh> TriangleMesh::copy_mesh() const{
 }
 
 void TriangleMesh::apply_transform(shared_ptr<Transform> t){
-  for(auto v : *vertices) *v = t->apply_v(*v);
+  for(auto v : *vertices) *v = t->apply_p(*v);
   for(auto n : *normals) *n = t->apply_n(*n);
 }
 
