@@ -14,68 +14,65 @@ namespace rt3 {
     }
 
     bool Sphere::intersect(const Ray &r, shared_ptr<Surfel> &isect) const {
-        //std::cout << "oi???" << std::endl;
-        
+        auto invRay = inv_transform->apply_r(r);
+
+        real_type t;
+        if(!calc_t(invRay, t)) return false;
+            
+        Point3f contact = invRay(t);
+        Normal3f normal = glm::normalize(contact - center);
+
+            contact = transform->apply_p(contact);
+            t = glm::length(contact - invRay.o);
+
+        isect = unique_ptr<Surfel>(new Surfel(
+            transform->apply_p(contact), // contact point
+            transform->apply_n(normal),
+            -r.d, // original ray dir
+            t // t
+        ));
+        return true;
+    }
+
+    bool Sphere::calc_t(const Ray &r, real_type &t) const {
         real_type A, B;
         real_type delta = calc_delta(r, A, B);
+
         if(delta >= 0){
-            //std::cout << "delta >= 0" << std::endl;
-            real_type t[2] = {
+            real_type tt[2] = {
                 (-B - (real_type)sqrt(delta)) / (2 * A),
                 (-B + (real_type)sqrt(delta)) / (2 * A),
             };
-
-            if(t[0] > t[1]) std::swap(t[0], t[1]);
-
-            Point3f contact;
-            
-            real_type cont_t = t[1];
-            if(t[0] > 0) {
-                contact = r(t[0]);
-                cont_t = t[0];
+            if(tt[0] > tt[1]) std::swap(tt[0], tt[1]);
+            if(tt[0] < 0){
+                if(tt[1] < 0) return false;
+                else{
+                    t = tt[1];
+                    return true;
+                }
+            }else{
+                t = tt[0];
+                return true;
             }
-            else if(t[1] > 0) {
-                contact = r(t[1]);
-                cont_t = t[1];
-            }
-            else return false;
-
-            Vector3f normal = glm::normalize(contact - center);
-
-            isect = shared_ptr<Surfel>(new Surfel(
-                contact /* + normal * 0.001f */,
-                normal,
-                -r.d,
-                cont_t
-            ));
-
-            return true;
-        }else{
-            //std::cout << "delta < 0" << std::endl;
-            return false;
-        }
+        } else return false;
     }
 
     bool Sphere::intersect_p(const Ray& r, real_type maxT ) const {
-        real_type A, B;
-        real_type delta = calc_delta(r, A, B);
+        auto transformed_ray = inv_transform->apply_r(r);
+        real_type t;
+        if(!calc_t(transformed_ray, t)) return false;
 
-        if(delta >= 0){
-            real_type t[2] = {
-                (-B - (real_type)sqrt(delta)) / (2 * A),
-                (-B + (real_type)sqrt(delta)) / (2 * A),
-            };
-            if(t[0] > t[1]) std::swap(t[0], t[1]);
-            if(t[0] > 0) return t[0] < maxT;
-            else if(t[1] > 0) return t[1] < maxT;
-            else return false;
-        } else return false;
+            Point3f contact = transformed_ray(t);
+            contact = transform->apply_p(contact);
+            t = glm::length(contact - r.o);
+
+        return t < maxT;
     }
 
     Bounds3f Sphere::computeBounds() const{
         Point3f radiusPoint{radius, radius, radius};
 
-        return Bounds3f{center - radiusPoint, center + radiusPoint};
+        return transform->apply_b(Bounds3f{center - radiusPoint, center + radiusPoint});
     }
 
     Sphere *create_sphere(const ParamSet &ps, shared_ptr<Transform> tr) {

@@ -97,7 +97,7 @@ Material * API::make_material(const ParamSet &ps_material)
 
     Material *material = nullptr;
     if(type == "flat"){
-        material = create_flat_material(ps_material);
+      material = create_flat_material(ps_material);
     } else if(type == "blinn") {
       material = create_ping_pong_material(ps_material);
     } else {
@@ -454,10 +454,19 @@ void API::object(const ParamSet &ps) {
       }  
     }
   }else{
-    global_primitives.push_back({ps, curr_material, make_shared<Transform>(curr_TM)});
+    //global_primitives.push_back({ps, curr_material, make_shared<Transform>(curr_TM)});
     if(curr_obj == "") {
+      std::cout << "colocando esfera" << std::endl;
       global_primitives.push_back(
         {ps, curr_material, make_shared<Transform>(curr_TM)});
+      
+      for(int i = 0; i < 4; i++) {
+        for(int j = 0; j < 4; j++) {
+          std::cout << curr_TM.m[i][j] << " ";
+        }
+        std::cout << std::endl;
+      }
+
     } else {
       named_obj_build[curr_obj]->primitives.push_back(
         {ps, curr_material, make_shared<Transform>(curr_TM)});
@@ -535,21 +544,15 @@ void API::translate(const ParamSet &ps) {
   Vector3f v = retrieve(ps, "value", Vector3f{0, 0, 0});
 
   auto translate_matrix = Transform::getTranslationMatrix(v);
-
-  curr_TM = curr_TM.update(translate_matrix);
-  for(int i = 0; i < 4; i++) {
-    for(int j = 0; j < 4; j++) {
-      std::cout << curr_TM.m[i][j] << " ";
-    }
-    std::cout << std::endl;
-  }
+  curr_TM = translate_matrix.update(curr_TM);
 }
 void API::scale(const ParamSet &ps) {
   std::cout << ">>> Inside API::scale()\n";
   VERIFY_WORLD_BLOCK("API::scale");
 
   Point3f p = retrieve(ps, "value", Point3f{1, 1, 1});
-  curr_TM = curr_TM.update(Transform::getScalingMatrix(p));
+  auto scale_matrix = Transform::getScalingMatrix(p);
+  curr_TM = scale_matrix.update(curr_TM);
 }      
 void API::rotate(const ParamSet &ps) {
   std::cout << ">>> Inside API::rotate()\n";
@@ -557,7 +560,9 @@ void API::rotate(const ParamSet &ps) {
 
   Vector3f v = retrieve(ps, "axis", Vector3f{0, 0, 0});
   real_type degrees = retrieve(ps, "angle", real_type{0});
-  curr_TM = curr_TM.update(Transform::getRotationMatrix(v, degrees));
+
+  auto rotate_matrix = Transform::getRotationMatrix(v, degrees);
+  curr_TM = rotate_matrix.update(curr_TM);
 }      
 void API::save_coord_system(const ParamSet &ps) {}
 void API::restore_coord_system(const ParamSet &ps) {}

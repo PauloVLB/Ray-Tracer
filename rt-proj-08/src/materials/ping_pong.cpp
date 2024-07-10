@@ -3,6 +3,7 @@
 namespace rt3{
 
 PingPongMaterial * create_ping_pong_material( const ParamSet &ps ){
+    std::cout << "Creating PingPongMaterial" << std::endl;
     return new PingPongMaterial(
         retrieve(ps, "ambient", Color()),
         retrieve(ps, "diffuse", Color()),

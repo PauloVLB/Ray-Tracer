@@ -25,6 +25,8 @@ public:
     bool intersect_p(const Ray &r, real_type maxT ) const override;
     bool intersect(const Ray &r, shared_ptr<Surfel> &isect) const override;
 
+    bool calc_t(const Ray &r, real_type &t) const;
+
     shared_ptr<Transform> transform, inv_transform;
 };
 

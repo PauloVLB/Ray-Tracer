@@ -62,7 +62,7 @@ Bounds3f Transform::apply_b(const Bounds3f &b) const{
 }
 
 Transform Transform::update(const Transform &t2) const{
-  return Transform(m * t2.m);
+  return Transform(m * t2.m, t2.mInv * mInv);
 }
 
 Transform Transform::getTranslationMatrix(const Vector3f &v){

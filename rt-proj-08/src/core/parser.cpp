@@ -162,7 +162,12 @@ void parse_tags(tinyxml2::XMLElement* p_element, int level) {
       ParamSet ps;
       vector<std::pair<param_type_e, string>> param_list{ 
         { param_type_e::COLOR, "color" },
-        { param_type_e::STRING, "type" }
+        { param_type_e::STRING, "type" },
+        { param_type_e::COLOR, "ambient" },
+        { param_type_e::COLOR, "diffuse" },
+        { param_type_e::COLOR, "specular" },
+        { param_type_e::COLOR, "mirror" },
+        { param_type_e::REAL, "glossiness" }
       };
       parse_parameters(p_element, param_list, /* out */ &ps);
       API::material(ps);
