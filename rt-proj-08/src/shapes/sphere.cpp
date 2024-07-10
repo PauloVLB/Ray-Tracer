@@ -23,7 +23,7 @@ namespace rt3 {
         Normal3f normal = glm::normalize(contact - center);
 
             contact = transform->apply_p(contact);
-            t = glm::length(contact - invRay.o);
+            t = glm::length(contact - r.o);
 
         isect = unique_ptr<Surfel>(new Surfel(
             transform->apply_p(contact), // contact point

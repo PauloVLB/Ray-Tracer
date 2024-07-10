@@ -544,16 +544,69 @@ void API::translate(const ParamSet &ps) {
   Vector3f v = retrieve(ps, "value", Vector3f{0, 0, 0});
 
   auto translate_matrix = Transform::getTranslationMatrix(v);
+
+  std::cout << "translate_matrix" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << translate_matrix.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  std::cout << "antes do translate" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
   curr_TM = translate_matrix.update(curr_TM);
+  // curr_TM = curr_TM.update(translate_matrix);
+
+  std::cout << "depois do translate" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
 }
+
 void API::scale(const ParamSet &ps) {
   std::cout << ">>> Inside API::scale()\n";
   VERIFY_WORLD_BLOCK("API::scale");
 
   Point3f p = retrieve(ps, "value", Point3f{1, 1, 1});
   auto scale_matrix = Transform::getScalingMatrix(p);
+  // curr_TM = curr_TM.update(scale_matrix);
+
+  std::cout << "scale_matrix" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << scale_matrix.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+  std::cout << "antes do scale" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
   curr_TM = scale_matrix.update(curr_TM);
-}      
+
+  std::cout << "depois do scale" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+}    
+
 void API::rotate(const ParamSet &ps) {
   std::cout << ">>> Inside API::rotate()\n";
   VERIFY_WORLD_BLOCK("API::rotate");
@@ -562,7 +615,32 @@ void API::rotate(const ParamSet &ps) {
   real_type degrees = retrieve(ps, "angle", real_type{0});
 
   auto rotate_matrix = Transform::getRotationMatrix(v, degrees);
+  std::cout << "rotate_matrix" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << rotate_matrix.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  std::cout << "antes do rotate" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
+
+  // curr_TM = curr_TM.update(rotate_matrix);
   curr_TM = rotate_matrix.update(curr_TM);
+
+  std::cout << "depois do rotate" << std::endl;
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 4; j++) {
+      std::cout << curr_TM.m[i][j] << " ";
+    }
+    std::cout << std::endl;
+  }
 }      
 void API::save_coord_system(const ParamSet &ps) {}
 void API::restore_coord_system(const ParamSet &ps) {}
