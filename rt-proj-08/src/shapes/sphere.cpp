@@ -62,9 +62,9 @@ namespace rt3 {
         real_type t;
         if(!calc_t(transformed_ray, t)) return false;
 
-            Point3f contact = transformed_ray(t);
-            contact = transform->apply_p(contact);
-            t = glm::length(contact - r.o);
+            // Point3f contact = transformed_ray(t);
+            // contact = transform->apply_p(contact);
+            // t = glm::length(contact - r.o);
 
         return t < maxT;
     }

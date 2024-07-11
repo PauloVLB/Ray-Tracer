@@ -488,11 +488,11 @@ void API::instantiate_obj(const ParamSet &ps) {
   string obj_name = retrieve(ps, "name", string{});
 
   for(auto [ps, mat, tr] : named_obj_build[obj_name]->primitives) {
-    global_primitives.push_back({ps, mat, make_shared<Transform>(curr_TM.update(*tr))}); 
+    global_primitives.push_back({ps, mat, make_shared<Transform>((*tr).update(curr_TM))}); 
   }
 
   for(auto [mesh, mat, tr] : named_obj_build[obj_name]->mesh_primitives) {
-    global_mesh_primitives.push_back({mesh, mat, make_shared<Transform>(curr_TM.update(*tr))}); 
+    global_mesh_primitives.push_back({mesh, mat, make_shared<Transform>((*tr).update(curr_TM))}); 
   }
 
   for(auto ps : named_obj_build[obj_name]->lights) {
