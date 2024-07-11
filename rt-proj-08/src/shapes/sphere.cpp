@@ -26,7 +26,7 @@ namespace rt3 {
             t = glm::length(contact - r.o);
 
         isect = unique_ptr<Surfel>(new Surfel(
-            transform->apply_p(contact), // contact point
+            contact, // contact point
             transform->apply_n(normal),
             -r.d, // original ray dir
             t // t
