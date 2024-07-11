@@ -44,7 +44,7 @@ bool GeometricPrimitive::intersect(const Ray &r, shared_ptr<Surfel> &isect ) con
 }
 
 bool cmp(shared_ptr<PrimitiveBounds> a, shared_ptr<PrimitiveBounds> b) {
-    return a->getBoundBox().min_point.x < b->getBoundBox().min_point.x;
+    return a->getBoundBox().min_point[0] < b->getBoundBox().min_point[0];
 }
 
 bool BVHAccel::intersect_p( const Ray& r, real_type maxT ) const {
@@ -73,16 +73,19 @@ bool BVHAccel::intersect(const Ray &r, shared_ptr<Surfel> &isect ) const {
     return (isect != nullptr);
 }
 
-std::shared_ptr<BVHAccel> BVHAccel::build(vector<std::shared_ptr<PrimitiveBounds>> &&prim) {
+std::shared_ptr<BVHAccel> BVHAccel::build(vector<std::shared_ptr<PrimitiveBounds>> &&prim, int primsPerLeaf) {
     vector<shared_ptr<PrimitiveBounds>> primitives{std::move(prim)};
 
     sort(primitives.begin(), primitives.end(), cmp);
 
     vector<shared_ptr<BVHAccel>> tree;
-    for(int i = 0; i < (int) primitives.size(); i++){
-        vector<shared_ptr<PrimitiveBounds>> leaf{primitives[i]};
+    for(int i = 0; i < (int) primitives.size(); i += primsPerLeaf){
+        vector<shared_ptr<PrimitiveBounds>> leaf;
 
         //leaf.push_back(primitives[i]);
+        for(int j = i; j - i < primsPerLeaf && j < (int) primitives.size(); j++){
+            leaf.push_back(primitives[j]);
+        }
         
         shared_ptr<BVHAccel> node{ new BVHAccel(std::move(leaf)) };
         tree.push_back(node);

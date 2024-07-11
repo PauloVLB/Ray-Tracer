@@ -41,8 +41,8 @@
             <rotate axis="0 1 0" angle="90.001"/>
             <rotate axis="0 0 1" angle="90.001"/>
             <scale value="0.1 0.1 0.1 "/>
-            <object type="trianglemesh" filename="scene/models/teapot-low.obj" reverse_vertex_order="false" backface_cull ="true"/>
-            <!-- <object type="trianglemesh" filename="scene/models/lid.obj" reverse_vertex_order="false" backface_cull ="true"/> -->
+            <object type="trianglemesh" filename="scene/models/body.obj" reverse_vertex_order="false" backface_cull ="true"/>
+            <object type="trianglemesh" filename="scene/models/lid.obj" reverse_vertex_order="false" backface_cull ="true"/>
         <object_instance_end/>
 
         <!-- back row -->

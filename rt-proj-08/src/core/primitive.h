@@ -79,7 +79,7 @@ public:
 
     bool intersect(const Ray& r, std::shared_ptr<Surfel>& isect) const override;
 
-    static std::shared_ptr<BVHAccel> build(vector<std::shared_ptr<PrimitiveBounds>> &&prim);
+    static std::shared_ptr<BVHAccel> build(vector<std::shared_ptr<PrimitiveBounds>> &&prim, int primsPerLeaf = 1);
 };
 
 

@@ -10,7 +10,7 @@
     <include filename="../test_scene/transformations/03_dinning_set_geometry.xml" />
 
     <lookat look_from="0 20 0 " look_at="0 0 0" up="-10 0 30" />
-    <camera type="orthographic" screen_window="-26.5 26.5 -20 20" /> -->
+    <camera type="orthographic" screen_window="-26.5 26.5 -20 20" /> 
     <film type="image" x_res="1600" y_res="1200" filename="../test_img/transformations/03_dinning_set_ortho.png" img_type="png" />
 
     <!-- The Scene -->
