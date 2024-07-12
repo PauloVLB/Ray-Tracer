@@ -45,6 +45,6 @@ namespace rt3{
         Ray r{x, light_surfel->p - x};
         //std::shared_ptr<Surfel> isect;
 
-        return (!scene->intersect_p(r, object_surfel->time - 1.0f));
+        return (!scene->intersect_p(r, object_surfel->time + 3.0f));
     }
 }
