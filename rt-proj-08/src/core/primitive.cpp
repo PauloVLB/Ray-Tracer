@@ -76,7 +76,7 @@ bool BVHAccel::intersect(const Ray &r, shared_ptr<Surfel> &isect ) const {
 std::shared_ptr<BVHAccel> BVHAccel::build(vector<std::shared_ptr<PrimitiveBounds>> &&prim, int primsPerLeaf) {
     vector<shared_ptr<PrimitiveBounds>> primitives{std::move(prim)};
 
-    sort(primitives.begin(), primitives.end(), cmp);
+    // sort(primitives.begin(), primitives.end(), cmp);
 
     vector<shared_ptr<BVHAccel>> tree;
     for(int i = 0; i < (int) primitives.size(); i += primsPerLeaf){
